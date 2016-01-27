@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for lib/thrift-transport-xhr.js</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../prettify.css">
+    <link rel="stylesheet" href="../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class="header medium">
+    <h1>Code coverage report for <span class="entity">lib/thrift-transport-xhr.js</span></h1>
+    <h2>
+        Statements: <span class="metric">61.22% <small>(60 / 98)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">57.14% <small>(16 / 28)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">45.45% <small>(10 / 22)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">61.22% <small>(60 / 98)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+    </h2>
+    <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">lib/</a> &#187; thrift-transport-xhr.js</div>
+</div>
+<div class="body">
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">58</span>
+<span class="cline-any cline-yes">58</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">58</span>
+<span class="cline-any cline-yes">58</span>
+<span class="cline-any cline-yes">58</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">86</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+/*global define */
+/*jshint white: true */
+&nbsp;
+define([
+    'thrift', 
+    'bluebird'
+], function (Thrift, Promise) {
+    'use strict';
+    
+<span class="fstat-no" title="function not covered" >    function TTransportError() {</span>
+<span class="cstat-no" title="statement not covered" >        this.name = 'TTransportError';</span>
+    }
+    TTransportError.prototype = Object.create(Thrift.TException.prototype);
+    TTransportError.prototype.constructor = TTransportError;
+    Thrift.TTransportError = TTransportError;
+    
+<span class="fstat-no" title="function not covered" >    function TXHRTransportError(error) {</span>
+<span class="cstat-no" title="statement not covered" >        this.name = 'TXHRTransportError';</span>
+<span class="cstat-no" title="statement not covered" >        this.reason = error.reason;</span>
+<span class="cstat-no" title="statement not covered" >        this.message = error.message;</span>
+<span class="cstat-no" title="statement not covered" >        this.suggestions = error.suggestions;</span>
+<span class="cstat-no" title="statement not covered" >        this.data = error.data;</span>
+<span class="cstat-no" title="statement not covered" >        this.stack = (new Error()).stack;</span>
+    }
+    // Steal the function prototype from Thrift.TException
+    TXHRTransportError.prototype = Object.create(TTransportError.prototype);
+    TXHRTransportError.prototype.constructor = TXHRTransportError;
+    Thrift.TXHRTransportError = TXHRTransportError;
+    
+&nbsp;
+    /**
+     * Constructor Function for the XHR transport.
+     * If you do not specify a url then you must handle XHR operations on
+     * your own. This type can also be constructed using the Transport alias
+     * for backward compatibility.
+     * @constructor
+     * @param {string} [url] - The URL to connect to.
+     * @classdesc The Apache Thrift Transport layer performs byte level I/O 
+     * between RPC clients and servers. The JavaScript TXHRTransport object 
+     * uses Http[s]/XHR. Target servers must implement the http[s] transport
+     * (see: node.js example server_http.js).
+     * @example
+     *     var transport = new Thrift.TXHRTransport("http://localhost:8585");
+     */
+    Thrift.TXHRTransport = function (url, options) {
+        this.url = url;
+        this.wpos = 0;
+        this.rpos = 0;
+        this.useCORS = (options &amp;&amp; options.useCORS);
+        this.timeout = (options &amp;&amp; options.timeout);
+        this.send_buf = [];
+        this.byte_buf = [];
+        this.recv_buf = [];        
+    };
+&nbsp;
+    Thrift.TXHRTransport.prototype = {
+        /**
+         * Sends the current XRH request if the transport was created with a URL 
+         * and the async parameter is false. If the transport was not created with
+         * a URL, or the async parameter is True and no callback is provided, or 
+         * the URL is an empty string, the current send buffer is returned.
+         * @param {object} async - If true the current send buffer is returned.
+         * @param {object} callback - Optional async completion callback 
+         * @returns {undefined|string} Nothing or the current send buffer.
+         * @throws {string} If XHR fails.
+         */
+        flush: function (async, callback) {
+            // does nothing.
+        },
+        /**
+         * 
+         * @typedef {object} ThriftException
+         * @property {string} type - The basic type of the error: always ThriftError
+         *                           for exceptions thrown directly in this file.
+         * @property {string} reason - the specific cause of the error
+         * @property {string} message - an error message designed to be meaningful to a human developer
+         * @property {object} data - an arbitrary data object which may be useful to the client for diagnosing the errror
+         * 
+         */
+        /**
+         * Creates a Prmoise-wrapped XHR object to be used for a Thrift server call.
+         * @param {object} client - The Thrift Service client object generated by the IDL compiler.
+         * @param {object} postData - The message to send to the server.
+         * @param {function} args - The original call arguments with the success call back at the end.
+         * @param {function} recv_method - The Thrift Service Client receive method for the call.
+         * @returns {object} A Promises A+ compatible promise.
+         * @throws {ThriftException} A thrift exception object describing the error.
+         */
+&nbsp;
+        jqRequest: function (client, postData, args, recv_method) {
+            var thriftTransport = this,
+                timeout = client.timeout || thriftTransport.timeout;
+&nbsp;
+            // TODO: add notification for progress
+            return new Promise(function (resolve, reject, notify) {
+                var xhr = new XMLHttpRequest();
+                xhr.onload = function (e) {
+                    <span class="missing-if-branch" title="if path not taken" >I</span>if (xhr.status === 502) {
+<span class="cstat-no" title="statement not covered" >                        reject(new TXHRTransportError({</span>
+                            reason: 'ProxyError',
+                            message: 'The thrift service is not running behind the proxy',
+                            data: xhr
+                        }));
+<span class="cstat-no" title="statement not covered" >                        return;</span>
+                    } else <span class="missing-if-branch" title="if path not taken" >I</span>if (xhr.status === 500) {
+<span class="cstat-no" title="statement not covered" >                        reject(new TXHRTransportError({</span>
+                            reason: 'ServiceError',
+                            message: 'The thrift service or proxy has crashed',
+                            data: xhr
+                        }));
+<span class="cstat-no" title="statement not covered" >                        return;</span>
+                    } else <span class="missing-if-branch" title="if path not taken" >I</span>if (xhr.status === 400) {
+<span class="cstat-no" title="statement not covered" >                        reject(new TXHRTransportError({</span>
+                            reason: 'RequestError',
+                            message: 'There was an error in the request',
+                            data: xhr
+                        }));
+<span class="cstat-no" title="statement not covered" >                        return;</span>
+                    } else <span class="missing-if-branch" title="if path not taken" >I</span>if (xhr.status === 404) {
+<span class="cstat-no" title="statement not covered" >                        reject(new TXHRTransportError({</span>
+                            reason: 'NotFound',
+                            message: 'The thrift service could not be contacted, incorrect request',
+                            data: xhr
+                        }));
+<span class="cstat-no" title="statement not covered" >                        return;</span>
+                    } else <span class="missing-if-branch" title="if path not taken" >I</span>if (xhr.status &gt;= 400 &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >xhr.status &lt; 500)</span> {
+<span class="cstat-no" title="statement not covered" >                        reject(new TXHRTransportError({</span>
+                            reason: 'GeneralClientError',
+                            message: 'An error was reported, blamed on the client request',
+                            data: xhr
+                        }));
+<span class="cstat-no" title="statement not covered" >                        return;</span>
+                    } else <span class="missing-if-branch" title="if path not taken" >I</span>if (xhr.status &gt;= 500) {
+<span class="cstat-no" title="statement not covered" >                        reject(new TXHRTransportError({</span>
+                            reason: 'GeneralServerError',
+                            message: 'An error was reported, blamed on the server',
+                            data: xhr
+                        }));
+<span class="cstat-no" title="statement not covered" >                        return;</span>
+                    } else <span class="missing-if-branch" title="if path not taken" >I</span>if (xhr.status !== 200) {
+<span class="cstat-no" title="statement not covered" >                        reject(new TXHRTransportError({</span>
+                            reason: 'UnexpectedResponse',
+                            message: 'The server responded with an unexpected code',
+                            data: xhr
+                        }));
+<span class="cstat-no" title="statement not covered" >                        return;</span>
+                    }
+                    var buf = new Uint8Array(xhr.response);
+                    // thriftTransport.setRecvBuffer(this.responseText);
+                    thriftTransport.setRecvBuffer(buf);
+                    try {
+                        resolve(recv_method.call(client));
+                    } catch (ex) {
+<span class="cstat-no" title="statement not covered" >                        console.log('REJECTED in onload');</span>
+<span class="cstat-no" title="statement not covered" >                        console.log(ex);</span>
+<span class="cstat-no" title="statement not covered" >                        reject(ex);</span>
+                    }
+                };
+                xhr.ontimeout = <span class="fstat-no" title="function not covered" >function (e) {</span>
+<span class="cstat-no" title="statement not covered" >                    reject(new TXHRTransportError({</span>
+                        reason: 'RequestTimeout',
+                        message: 'General request timeout',
+                        suggestions: 'The service device is not reachable, the client tried until the timeout period expired',
+                        data: xhr
+                    }));
+                };
+                xhr.onerror = <span class="fstat-no" title="function not covered" >function (e) {</span>
+<span class="cstat-no" title="statement not covered" >                    reject(new TXHRTransportError({</span>
+                        reason: 'RequestError',
+                        message: 'General request error',
+                        suggestions: 'The service device is operating, but the http server is unavailable.',
+                        data: xhr
+                    }));
+                };
+                xhr.onabort = <span class="fstat-no" title="function not covered" >function (e) {</span>
+<span class="cstat-no" title="statement not covered" >                    reject(new TXHRTransportError({</span>
+                        type: 'ThriftError',
+                        reason: 'RequestAbort',
+                        message: 'General request abort',
+                        data: xhr
+                    }));
+                };
+               
+&nbsp;
+                xhr.timeout = timeout;
+                try {
+                    xhr.open('POST', thriftTransport.url, true);
+                } catch (ex) {
+<span class="cstat-no" title="statement not covered" >                    reject(new TXHRTransportError({</span>
+                        reason: 'ConnectionOpenError',
+                        message: 'Error opening connecting to to thrift http service',
+                        suggestions: 'This is probably a malformed url',
+                        data: xhr
+                    }));
+                }
+&nbsp;
+                try {
+                    xhr.setRequestHeader('Accept', 'application/x-thrift');
+                    xhr.setRequestHeader('Content-type', 'application/x-thrift');
+                    xhr.responseType = 'arraybuffer';
+                    xhr.send(new Uint8Array(thriftTransport.send_buf));
+                } catch (ex) {
+<span class="cstat-no" title="statement not covered" >                    reject(new TXHRTransportError({</span>
+                        type: 'ThriftError',
+                        reason: 'ConnectionSendError',
+                        message: 'Error sending data to thrift http service',
+                        suggestions: '',
+                        data: xhr
+                    }));
+                }
+            });
+        },
+        /**
+         * Sets the buffer to provide the protocol when deserializing.
+         * @param {string} buf - The buffer to supply the protocol.
+         */
+        setRecvBuffer: function (buf) {
+            this.recv_buf = buf;
+            this.recv_buf_sz = this.recv_buf.length;
+            this.wpos = this.recv_buf.length;
+            this.rpos = 0;
+        },
+        /**
+         * Returns true if the transport is open, XHR always returns true.
+         * @readonly
+         * @returns {boolean} Always True.
+         */
+        isOpen: <span class="fstat-no" title="function not covered" >function () {</span>
+<span class="cstat-no" title="statement not covered" >            return true;</span>
+        },
+        /**
+         * Opens the transport connection, with XHR this is a nop.
+         */
+        open: <span class="fstat-no" title="function not covered" >function () {</span>},
+        /**
+         * Closes the transport connection, with XHR this is a nop.
+         */
+        close: <span class="fstat-no" title="function not covered" >function () {</span>},
+        /**
+         * Returns the specified number of characters from the response
+         * buffer.
+         * @param {number} len - The number of characters to return.
+         * @returns {string} Characters sent by the server.
+         */ 
+        readByte: function () {
+            var avail = this.wpos - this.rpos;
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (avail === 0) {
+<span class="cstat-no" title="statement not covered" >                return null;</span>
+            }
+            var ret = this.recv_buf[this.rpos];
+            this.rpos += 1;
+            return ret;
+        },
+        read: function (len) {
+            var avail = this.wpos - this.rpos;
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (avail &gt;= len) {
+                this.rpos += len;
+                return this.recv_buf.subarray(this.rpos - len, this.rpos);                
+            }
+<span class="cstat-no" title="statement not covered" >            if (avail === 0) {</span>
+<span class="cstat-no" title="statement not covered" >                return new Uint8Array();</span>
+            }
+<span class="cstat-no" title="statement not covered" >            throw new Error('Requested more bytes (' + len + ') than are available (' + avail + ')');</span>
+        },
+        /**
+         * Returns the entire response buffer.
+         * @returns {string} Characters sent by the server.
+         */
+        readAll: <span class="fstat-no" title="function not covered" >function () {</span>
+<span class="cstat-no" title="statement not covered" >            return this.recv_buf;</span>
+        },
+        /**
+         * Sets the send buffer to buf.
+         * @param {string} buf - The buffer to send.
+         */
+        writeByte: function (b) {
+            this.send_buf.push(b);
+        },
+        write: <span class="fstat-no" title="function not covered" >function (buf) {</span>
+<span class="cstat-no" title="statement not covered" >             buf.forEach(<span class="fstat-no" title="function not covered" >function (b) {</span></span>
+<span class="cstat-no" title="statement not covered" >                this.send_buf.push(b);</span>
+            })
+        },
+        /**
+         * Returns the send buffer.
+         * @readonly
+         * @returns {string} The send buffer.
+         */
+        getSendBuffer: <span class="fstat-no" title="function not covered" >function () {</span>
+<span class="cstat-no" title="statement not covered" >            return this.send_buf;</span>
+        }
+&nbsp;
+    };
+    
+    return Thrift;
+});</pre></td></tr>
+</table></pre>
+
+</div>
+<div class="footer">
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Jan 15 2016 14:13:50 GMT-0800 (PST)</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

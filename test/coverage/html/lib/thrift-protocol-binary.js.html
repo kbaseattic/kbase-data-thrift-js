@@ -1,0 +1,1791 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for lib/thrift-protocol-binary.js</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../prettify.css">
+    <link rel="stylesheet" href="../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class="header medium">
+    <h1>Code coverage report for <span class="entity">lib/thrift-protocol-binary.js</span></h1>
+    <h2>
+        Statements: <span class="metric">51.2% <small>(107 / 209)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">32.14% <small>(27 / 84)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">86% <small>(43 / 50)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">51.2% <small>(107 / 209)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+    </h2>
+    <div class="path"><a href="../index.html">All files</a> &#187; <a href="index.html">lib/</a> &#187; thrift-protocol-binary.js</div>
+</div>
+<div class="body">
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">45</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">124</span>
+<span class="cline-any cline-yes">124</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">124</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">24</span>
+<span class="cline-any cline-yes">24</span>
+<span class="cline-any cline-yes">192</span>
+<span class="cline-any cline-yes">192</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/*global define */
+/*jslint white: true */
+&nbsp;
+/**
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) 2015 Radoslaw Gruchalski &lt;radek@gruchalski.com&gt;
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+&nbsp;
+/**
+ * Initializes a BinaryProtocol Implementation as a Wrapper for Thrift.Protocol
+ * @constructor
+ * @param {Thrift.Transport} transport - The transport to serialize to/from.
+ * @param {boolean} stringRead - indicates strict read.
+ * @param {boolean} stringWrite - indicates strict write.
+ * @classdesc Apache Thrift Protocols perform serialization which enables cross 
+ * language RPC. The Protocol type is the JavaScript browser implementation 
+ * of the Apache Thrift TBinaryProtocol.
+ * @example
+ *     var protocol  = new Thrift.TBinaryProtocol(transport);
+ */
+define([
+    'thrift'
+], function (Thrift) {
+    'use strict';
+    Thrift.TBinaryProtocol = function (transport, strictRead, strictWrite) {
+        this.transport = transport;
+        this.strictRead = (strictRead !== undefined ? <span class="branch-0 cbranch-no" title="branch not covered" >strictRead </span>: false);
+        this.strictWrite = (strictWrite !== undefined ? <span class="branch-0 cbranch-no" title="branch not covered" >strictWrite </span>: false);
+        // This is needed to avoid use, initialized, in the map
+        // type processing logic
+        this.rstack = [];
+        this.rpos = [0];
+    };
+&nbsp;
+    Thrift.TBinaryProtocol.VERSION_MASK = 0xffff0000;
+    Thrift.TBinaryProtocol.VERSION_1 = 0x80010000;
+    Thrift.TBinaryProtocol.TYPE_MASK = 0x000000ff;
+&nbsp;
+    Thrift.TBinaryProtocol.prototype = {
+        getTransport: function () {
+            return this.transport;
+        },
+        /**
+         * Serializes the beginning of a Thrift RPC message.
+         * @param {string} name - The service method to call.
+         * @param {Thrift.MessageType} messageType - The type of method call.
+         * @param {number} seqid - The sequence number of this call (always 0 in Apache Thrift).
+         */
+        writeMessageBegin: function (name, type, seqid) {
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (this.strictWrite) {
+<span class="cstat-no" title="statement not covered" >                this.writeI16(Thrift.TBinaryProtocol.VERSION_1 &gt;&gt; 16);</span>
+<span class="cstat-no" title="statement not covered" >                this.writeI16(type);</span>
+<span class="cstat-no" title="statement not covered" >                this.writeString(name);</span>
+<span class="cstat-no" title="statement not covered" >                this.writeI32(seqid);</span>
+            } else {
+                this.writeString(name);
+                this.writeByte(type);
+                this.writeI32(seqid);
+            }
+        },
+        /**
+         * Serializes the end of a Thrift RPC message.
+         */
+        writeMessageEnd: function () {
+            // Nothing to do
+        },
+        /**
+         * Serializes the beginning of a struct.
+         * @param {string} name - The name of the struct.
+         */
+        writeStructBegin: function (name) {
+            // EAP - nothing to do or not implemented?
+        },
+        /**
+         * Serializes the end of a struct.
+         */
+        writeStructEnd: function () {
+            // EAP - nothing to do or not implemented?
+        },
+        /**
+         * Serializes the beginning of a struct field.
+         * @param {string} name - The name of the field.
+         * @param {Thrift.Protocol.Type} fieldType - The data type of the field.
+         * @param {number} fieldId - The field's unique identifier.
+         */
+        // EAP - name in args but not used? Other impls don't seem to use either.
+        writeFieldBegin: function (name, type, id) {
+            this.writeByte(type);
+            this.writeI16(id);
+        },
+        /**
+         * Serializes the end of a field.
+         */
+        writeFieldEnd: function () {
+            // EAP - nothing to do or not implemented?
+        },
+        /**
+         * Serializes the end of the set of fields for a struct.
+         */
+        writeFieldStop: function () {
+            this.writeByte(Thrift.Type.STOP);
+        },
+        /**
+         * Serializes the beginning of a map collection.
+         * @param {Thrift.Type} keyType - The data type of the key.
+         * @param {Thrift.Type} valType - The data type of the value.
+         * @param {number} [size] - The number of elements in the map (ignored).
+         */
+        writeMapBegin: function (keyType, valType, size) {
+            this.writeByte(keyType);
+            this.writeByte(valType);
+            this.writeI32(size);
+        },
+        /**
+         * Serializes the end of a map.
+         */
+        writeMapEnd: function () {
+            // EAP - nothing to do or not implemented?
+        },
+        /**
+         * Serializes the beginning of a list collection.
+         * @param {Thrift.Type} elemType - The data type of the elements.
+         * @param {number} size - The number of elements in the list.
+         */
+        writeListBegin: function (elemType, size) {
+            this.writeByte(elemType);
+            this.writeI32(size);
+        },
+        /**
+         * Serializes the end of a list.
+         */
+        writeListEnd: function () {
+            // EAP - nothing to do or not implemented?
+            // Oh why are there methods for noops ??
+        },
+        /**
+         * Serializes the beginning of a set collection.
+         * @param {Thrift.Type} elemType - The data type of the elements.
+         * @param {number} size - The number of elements in the list.
+         */
+        writeSetBegin: <span class="fstat-no" title="function not covered" >function (elemType, size) {</span>
+<span class="cstat-no" title="statement not covered" >            this.writeByte(elemType);</span>
+<span class="cstat-no" title="statement not covered" >            this.writeI32(size);</span>
+        },
+        /**
+         * Serializes the end of a set.
+         */
+        writeSetEnd: <span class="fstat-no" title="function not covered" >function () {</span>
+            // EAP - nothing to do or not implemented?
+        },
+        /** Serializes a boolean */
+        writeBool: function (bool) {
+            this.writeByte(bool ? 1 : <span class="branch-1 cbranch-no" title="branch not covered" >0)</span>;
+        },
+        /** Serializes a number */
+        writeByte: function (byte) {
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (byte &lt;= Math.pow(2, 31) * -1 || byte &gt;= Math.pow(2, 31)) {
+<span class="cstat-no" title="statement not covered" >                throw new Error(byte + " is incorrect for byte.");</span>
+            }
+            this.transport.writeByte(byte);
+        },
+        /** Serializes a number (short) */
+        /*jslint bitwise: true */
+        writeI16: function (i16) {
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (i16 &lt; Math.pow(2, 15) * -1 || i16 &gt;= Math.pow(2, 16)) {
+<span class="cstat-no" title="statement not covered" >                throw new Error(i16 + " is incorrect for i16.");</span>
+            }
+            this.transport.writeByte(255 &amp; i16 &gt;&gt; 8);
+            this.transport.writeByte(255 &amp; i16);
+        },
+        /** Serializes a number (int) */
+        writeI32: function (i32) {
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (i32 &lt;= Math.pow(2, 31) * -1 || i32 &gt;= Math.pow(2, 31)) {
+<span class="cstat-no" title="statement not covered" >                throw new Error(i32 + " is incorrect for i32.");</span>
+            }
+            this.transport.writeByte(255 &amp; i32 &gt;&gt; 24);
+            this.transport.writeByte(255 &amp; i32 &gt;&gt; 16);
+            this.transport.writeByte(255 &amp; i32 &gt;&gt; 8);
+            this.transport.writeByte(255 &amp; i32);
+        },
+        /** Serializes a number (long, for values over MAX_INTEGER, it will overflow) */
+        writeI64: function (i64) {
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (i64 &lt;= Math.pow(2, 63) * -1 || i64 &gt;= Math.pow(2, 64)) {
+<span class="cstat-no" title="statement not covered" >                throw new Error(i64 + " is incorrect for i64.");</span>
+            }
+            // Although this is a correct way of packing a long int,
+            // the value will overflow if the number is higher than max int
+            var hi = (i64 &amp; 0xffffffff00000000 &gt;&gt; 32);
+            var lo = i64 &amp; 0x00000000ffffffff;
+            this.writeI32(hi);
+            this.writeI32(lo);
+        },
+        /** Serializes a number (double IEEE-754) */
+        writeDouble: <span class="fstat-no" title="function not covered" >function (dub) {</span>
+            // The code obtained from here: http://cautionsingularityahead.blogspot.nl/2010/04/javascript-and-ieee754-redux.html
+            // According to the comments by the author, this code has been included in an external library
+            // and it's available under MIT license.
+<span class="cstat-no" title="statement not covered" >            var ebits = 11;</span>
+<span class="cstat-no" title="statement not covered" >            var fbits = 52;</span>
+<span class="cstat-no" title="statement not covered" >            var bias = (1 &lt;&lt; (ebits - 1)) - 1;</span>
+            // Compute sign, exponent, fraction
+<span class="cstat-no" title="statement not covered" >            var s, e, f;</span>
+<span class="cstat-no" title="statement not covered" >            if (isNaN(dub)) {</span>
+<span class="cstat-no" title="statement not covered" >                e = (1 &lt;&lt; bias) - 1;</span>
+<span class="cstat-no" title="statement not covered" >                f = 1;</span>
+<span class="cstat-no" title="statement not covered" >                s = 0;</span>
+            } else <span class="cstat-no" title="statement not covered" >if (dub === Infinity || dub === -Infinity) {</span>
+<span class="cstat-no" title="statement not covered" >                e = (1 &lt;&lt; bias) - 1;</span>
+<span class="cstat-no" title="statement not covered" >                f = 0;</span>
+<span class="cstat-no" title="statement not covered" >                s = (dub &lt; 0) ? 1 : 0;</span>
+            } else <span class="cstat-no" title="statement not covered" >if (dub === 0) {</span>
+<span class="cstat-no" title="statement not covered" >                e = 0;</span>
+<span class="cstat-no" title="statement not covered" >                f = 0;</span>
+<span class="cstat-no" title="statement not covered" >                s = (1 / dub === -Infinity) ? 1 : 0;</span>
+            } else {
+<span class="cstat-no" title="statement not covered" >                s = dub &lt; 0;</span>
+<span class="cstat-no" title="statement not covered" >                dub = Math.abs(dub);</span>
+<span class="cstat-no" title="statement not covered" >                if (dub &gt;= Math.pow(2, 1 - bias)) {</span>
+<span class="cstat-no" title="statement not covered" >                    var ln = Math.min(Math.floor(Math.log(dub) / Math.LN2), bias);</span>
+<span class="cstat-no" title="statement not covered" >                    e = ln + bias;</span>
+<span class="cstat-no" title="statement not covered" >                    f = dub * Math.pow(2, fbits - ln) - Math.pow(2, fbits);</span>
+                } else {
+<span class="cstat-no" title="statement not covered" >                    e = 0;</span>
+<span class="cstat-no" title="statement not covered" >                    f = dub / Math.pow(2, 1 - bias - fbits);</span>
+                }
+            }
+&nbsp;
+            // Pack sign, exponent, fraction
+<span class="cstat-no" title="statement not covered" >            var i, bits = [];</span>
+<span class="cstat-no" title="statement not covered" >            for (i = fbits; i; i -= 1) {</span>
+<span class="cstat-no" title="statement not covered" >                bits.push(f % 2 ? 1 : 0);</span>
+<span class="cstat-no" title="statement not covered" >                f = Math.floor(f / 2);</span>
+            }
+<span class="cstat-no" title="statement not covered" >            for (i = ebits; i; i -= 1) {</span>
+<span class="cstat-no" title="statement not covered" >                bits.push(e % 2 ? 1 : 0);</span>
+<span class="cstat-no" title="statement not covered" >                e = Math.floor(e / 2);</span>
+            }
+<span class="cstat-no" title="statement not covered" >            bits.push(s ? 1 : 0);</span>
+<span class="cstat-no" title="statement not covered" >            bits.reverse();</span>
+<span class="cstat-no" title="statement not covered" >            var str = bits.join('');</span>
+&nbsp;
+            // Bits to bytes
+<span class="cstat-no" title="statement not covered" >            while (str.length) {</span>
+<span class="cstat-no" title="statement not covered" >                this.transport.writeByte(parseInt(str.substring(0, 8), 2));</span>
+<span class="cstat-no" title="statement not covered" >                str = str.substring(8);</span>
+            }
+        },
+        /*jslint bitwise: false */
+&nbsp;
+        /** Serializes a string */
+        writeString: function (str) {
+            var s = this.encode_utf8(str),
+                strLen = s.length;
+            this.writeI32(s.length);
+            for (var i = 0; i &lt; strLen; i += 1) {
+                this.transport.writeByte(s.charCodeAt(i));
+            }
+        },
+        /** Serializes abritrary array of bytes */
+        writeBinary: function (buf) {
+            this.writeI32(buf.length);
+            this.transport.write(buf);
+//            buf.forEach(function (byte) {
+//                this.transport.writeByte(byte);
+//            }.bind(this));
+        },
+        /**
+         @class
+         @name AnonReadMessageBeginReturn
+         @property {string} fname - The name of the service method.
+         @property {Thrift.MessageType} mtype - The type of message call.
+         @property {number} rseqid - The sequence number of the message (0 in Thrift RPC).
+         */
+        /** 
+         * Deserializes the beginning of a message. 
+         * @returns {AnonReadMessageBeginReturn}
+         */
+        readMessageBegin: function () {
+            var version = this.readI32().value;
+            var name, type, seqid;
+            <span class="missing-if-branch" title="else path not taken" >E</span>if (version &lt; 0) {
+                <span class="missing-if-branch" title="if path not taken" >I</span>if (version &amp; Thrift.TBinaryProtocol.VERSION_MASK !== Thrift.TBinaryProtocol.VERSION_1) {
+<span class="cstat-no" title="statement not covered" >                    throw new Thrift.TException('Missing version identifier');</span>
+                }
+                type = version &amp; Thrift.TBinaryProtocol.TYPE_MASK;
+                name = this.readString().value;
+                seqid = this.readI32().value;
+                return {fname: name, mtype: type, rseqid: seqid};
+            } else {
+<span class="cstat-no" title="statement not covered" >                if (this.strictRead) {</span>
+<span class="cstat-no" title="statement not covered" >                    throw new Thrift.TException('No version identifier, old protocol client?');</span>
+                }
+<span class="cstat-no" title="statement not covered" >                name = this.readMultipleAsString(version);</span>
+<span class="cstat-no" title="statement not covered" >                type = this.readByte().value;</span>
+<span class="cstat-no" title="statement not covered" >                seqid = this.readI32().value;</span>
+<span class="cstat-no" title="statement not covered" >                return {fname: name, mtype: type, rseqid: seqid};</span>
+            }
+        },
+        /** Deserializes the end of a message. */
+        readMessageEnd: function () {
+        },
+        /** 
+         * Deserializes the beginning of a struct. 
+         * @param {string} [name] - The name of the struct (ignored)
+         * @returns {object} - Not supported in binary protocol
+         */
+        readStructBegin: function (name) {
+            return {fname: ''};
+        },
+        /** Deserializes the end of a struct. */
+        readStructEnd: function () {
+        },
+        /**
+         @class
+         @name AnonReadFieldBeginReturn
+         @property {string} fname - The name of the field (always '').
+         @property {Thrift.Type} ftype - The data type of the field.
+         @property {number} fid - The unique identifier of the field.
+         */
+        /** 
+         * Deserializes the beginning of a field. 
+         * @returns {AnonReadFieldBeginReturn}
+         */
+        readFieldBegin: function () {
+            var type = this.readByte().value;
+            if (type === Thrift.Type.STOP) {
+                return {fname: '', ftype: type, fid: 0};
+            } else {
+                return {fname: '', ftype: type, fid: this.readI16().value};
+            }
+        },
+        /** Deserializes the end of a field. */
+        readFieldEnd: function () {
+            return {value: ''};
+        },
+        /**
+         @class
+         @name AnonReadMapBeginReturn
+         @property {Thrift.Type} ktype - The data type of the key.
+         @property {Thrift.Type} vtype - The data type of the value.
+         @property {number} size - The number of elements in the map.
+         */
+        /** 
+         * Deserializes the beginning of a map. 
+         * @returns {AnonReadMapBeginReturn}
+         */
+        readMapBegin: function () {
+            var ktype = this.readByte().value;
+            var vtype = this.readByte().value;
+            var size = this.readI32().value;
+            return {ktype: ktype, vtype: vtype, size: size};
+        },
+        /** Deserializes the end of a map. */
+        readMapEnd: function () {
+            return this.readFieldEnd().value;
+        },
+        /**
+         @class
+         @name AnonReadColBeginReturn
+         @property {Thrift.Type} etype - The data type of the element.
+         @property {number} size - The number of elements in the collection.
+         */
+        /** 
+         * Deserializes the beginning of a list. 
+         * @returns {AnonReadColBeginReturn}
+         */
+        readListBegin: function () {
+            var etype = this.readByte().value;
+            var size = this.readI32().value;
+            return {etype: etype, size: size};
+        },
+        /** Deserializes the end of a list. */
+        readListEnd: function () {
+            return this.readFieldEnd().value;
+        },
+        /** 
+         * Deserializes the beginning of a set. 
+         * @returns {AnonReadColBeginReturn}
+         */
+        readSetBegin: <span class="fstat-no" title="function not covered" >function () {</span>
+<span class="cstat-no" title="statement not covered" >            var etype = this.readByte().value;</span>
+<span class="cstat-no" title="statement not covered" >            var size = this.readI32().value;</span>
+<span class="cstat-no" title="statement not covered" >            return {etype: etype, size: size};</span>
+        },
+        /** Deserializes the end of a set. */
+        readSetEnd: <span class="fstat-no" title="function not covered" >function () {</span>
+<span class="cstat-no" title="statement not covered" >            return this.readFieldEnd().value;</span>
+        },
+        /** Returns an object with a value property set to 
+         *  False unless the next number in the protocol buffer 
+         *  is 1, in which case the value property is True */
+        readBool: function () {
+            var byte = this.readByte().value;
+            return {value: (byte !== 0)};
+        },
+        /** Returns the an object with a value property set to the 
+         next value found in the protocol buffer */
+        readByte: function () {
+            var val = this.transport.readByte();
+            if (val &gt; 0x7f) {
+                val = 0 - ((val - 1) ^ 0xff);
+            }
+            return {value: val};
+        },
+        /** Returns the an object with a value property set to the 
+         next value found in the protocol buffer */
+        readI16: function () {
+            return {value: ((this.readByte().value &amp; 255) &lt;&lt; 8 | this.readByte().value &amp; 255)};
+        },
+        /** Returns the an object with a value property set to the 
+         next value found in the protocol buffer */
+        readI32: function () {
+            return {value: ((this.readByte().value &amp; 255) &lt;&lt; 24 | (this.readByte().value &amp; 255) &lt;&lt; 16 | (this.readByte().value &amp; 255) &lt;&lt; 8 | this.readByte().value &amp; 255)};
+        },
+        /** Returns the an object with a value property set to the 
+         next value found in the protocol buffer */
+        readI64: function () {
+            // Although this is a correct way of packing a long int,
+            // the value will overflow if the number is higher than max int
+            var i32_1 = this.readI32().value;
+            var i32_2 = this.readI32().value;
+            return {value: (i32_1 &lt;&lt; 32 | i32_2)};
+        },
+        /** Returns the an object with a value property set to the 
+         next value found in the protocol buffer */
+        readDouble: function () {
+            // The code obtained from here: http://cautionsingularityahead.blogspot.nl/2010/04/javascript-and-ieee754-redux.html
+            // According to the comments by the author, this code has been included in an external library
+            // and it's available under MIT license.
+            var ebits = 11;
+            var fbits = 52;
+            var bytes = this.readMultiple(8);
+            // Bytes to bits
+            var bits = [];
+            for (var i = bytes.length; i; i -= 1) {
+                var byte = bytes[i - 1];
+                for (var j = 8; j; j -= 1) {
+                    bits.push(byte % 2 ? 1 : 0);
+                    byte = byte &gt;&gt; 1;
+                }
+            }
+            bits.reverse();
+            var str = bits.join('');
+            // Unpack sign, exponent, fraction
+            var bias = (1 &lt;&lt; (ebits - 1)) - 1;
+            var s = parseInt(str.substring(0, 1), 2) ? <span class="branch-0 cbranch-no" title="branch not covered" >-1 </span>: 1;
+            var e = parseInt(str.substring(1, 1 + ebits), 2);
+            var f = parseInt(str.substring(1 + ebits), 2);
+            // Produce number
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (e === (1 &lt;&lt; ebits) - 1) {
+<span class="cstat-no" title="statement not covered" >                return {value: (f !== 0 ? NaN : s * Infinity)};</span>
+            } else <span class="missing-if-branch" title="else path not taken" >E</span>if (e &gt; 0) {
+                return {value: (s * Math.pow(2, e - bias) * (1 + f / Math.pow(2, fbits)))};
+            } else <span class="cstat-no" title="statement not covered" >if (f !== 0) {</span>
+<span class="cstat-no" title="statement not covered" >                return {value: (s * Math.pow(2, -(bias - 1)) * (f / Math.pow(2, fbits)))};</span>
+            } else {
+<span class="cstat-no" title="statement not covered" >                return {value: (s * 0)};</span>
+            }
+        },
+        /** Returns the an object with a value property set to the 
+         next value found in the protocol buffer */
+        readString: function () {
+            var size = this.readI32().value,
+                bytes = this.readMultiple(size);
+            return {value: this.decode_utf8(this.stringFromByteArray(bytes))};
+        },
+        readBinary: function () {
+            var size = this.readI32().value;
+            return {value: this.readMultiple(size)};
+        },
+        /** Returns the an object with a value property set to the 
+         next value found in the protocol buffer */
+        readMultipleAsString: <span class="fstat-no" title="function not covered" >function (len) {</span>
+<span class="cstat-no" title="statement not covered" >            var bytes = this.readMultiple(len);</span>
+<span class="cstat-no" title="statement not covered" >            return this.decode_utf8(this.stringFromByteArray(bytes));</span>
+        },
+        /** Returns the an object with a value property set to the 
+         next value found in the protocol buffer */
+        readMultiple: function (len) {
+            return this.transport.read(len);
+        },
+        /** 
+         * Method to arbitrarily skip over data */
+        skip: <span class="fstat-no" title="function not covered" >function (type) {</span>
+<span class="cstat-no" title="statement not covered" >            var ret, i;</span>
+<span class="cstat-no" title="statement not covered" >            switch (type) {</span>
+                case Thrift.Type.STOP:
+<span class="cstat-no" title="statement not covered" >                    return null;</span>
+                case Thrift.Type.BOOL:
+<span class="cstat-no" title="statement not covered" >                    return this.readBool();</span>
+                case Thrift.Type.BYTE:
+<span class="cstat-no" title="statement not covered" >                    return this.readByte();</span>
+                case Thrift.Type.I16:
+<span class="cstat-no" title="statement not covered" >                    return this.readI16();</span>
+                case Thrift.Type.I32:
+<span class="cstat-no" title="statement not covered" >                    return this.readI32();</span>
+                case Thrift.Type.I64:
+<span class="cstat-no" title="statement not covered" >                    return this.readI64();</span>
+                case Thrift.Type.DOUBLE:
+<span class="cstat-no" title="statement not covered" >                    return this.readDouble();</span>
+                case Thrift.Type.STRING:
+<span class="cstat-no" title="statement not covered" >                    return this.readString();</span>
+                case Thrift.Type.STRUCT:
+<span class="cstat-no" title="statement not covered" >                    this.readStructBegin();</span>
+<span class="cstat-no" title="statement not covered" >                    while (true) {</span>
+<span class="cstat-no" title="statement not covered" >                        ret = this.readFieldBegin();</span>
+<span class="cstat-no" title="statement not covered" >                        if (ret.ftype === Thrift.Type.STOP) {</span>
+<span class="cstat-no" title="statement not covered" >                            break;</span>
+                        }
+<span class="cstat-no" title="statement not covered" >                        this.skip(ret.ftype);</span>
+<span class="cstat-no" title="statement not covered" >                        this.readFieldEnd();</span>
+                    }
+<span class="cstat-no" title="statement not covered" >                    this.readStructEnd();</span>
+<span class="cstat-no" title="statement not covered" >                    return null;</span>
+                case Thrift.Type.MAP:
+<span class="cstat-no" title="statement not covered" >                    ret = this.readMapBegin();</span>
+<span class="cstat-no" title="statement not covered" >                    for (i = 0; i &lt; ret.size; i++) {</span>
+<span class="cstat-no" title="statement not covered" >                        if (i &gt; 0) {</span>
+<span class="cstat-no" title="statement not covered" >                            if (this.rstack.length &gt; this.rpos[this.rpos.length - 1] + 1) {</span>
+<span class="cstat-no" title="statement not covered" >                                this.rstack.pop();</span>
+                            }
+                        }
+<span class="cstat-no" title="statement not covered" >                        this.skip(ret.ktype);</span>
+<span class="cstat-no" title="statement not covered" >                        this.skip(ret.vtype);</span>
+                    }
+<span class="cstat-no" title="statement not covered" >                    this.readMapEnd();</span>
+<span class="cstat-no" title="statement not covered" >                    return null;</span>
+                case Thrift.Type.SET:
+<span class="cstat-no" title="statement not covered" >                    ret = this.readSetBegin();</span>
+<span class="cstat-no" title="statement not covered" >                    for (i = 0; i &lt; ret.size; i++) {</span>
+<span class="cstat-no" title="statement not covered" >                        this.skip(ret.etype);</span>
+                    }
+<span class="cstat-no" title="statement not covered" >                    this.readSetEnd();</span>
+<span class="cstat-no" title="statement not covered" >                    return null;</span>
+                case Thrift.Type.LIST:
+<span class="cstat-no" title="statement not covered" >                    ret = this.readListBegin();</span>
+<span class="cstat-no" title="statement not covered" >                    for (i = 0; i &lt; ret.size; i++) {</span>
+<span class="cstat-no" title="statement not covered" >                        this.skip(ret.etype);</span>
+                    }
+<span class="cstat-no" title="statement not covered" >                    this.readListEnd();</span>
+<span class="cstat-no" title="statement not covered" >                    return null;</span>
+            }
+        },
+        // utils:
+&nbsp;
+        encode_utf8: function (s) {
+            return unescape(encodeURIComponent(s));
+        },
+        decode_utf8: function (s) {
+            return decodeURIComponent(escape(s));
+        },
+        stringFromByteArray: function (barr) {
+            // no try catch here, this will not work correctly for all Unicode characters
+            // if an array is used instead of Uint8Array.
+            // This is definitely working in the browser. PhantomJS has problems with this code.
+            // More details here:
+            //  - https://github.com/mozilla/pdf.js/issues/1955
+            //  - https://github.com/mozilla/pdf.js/issues/1008
+            return String.fromCharCode.apply(null, new Uint8Array(barr));
+        }
+    };
+&nbsp;
+    return Thrift;
+});</pre></td></tr>
+</table></pre>
+
+</div>
+<div class="footer">
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Jan 15 2016 14:13:50 GMT-0800 (PST)</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

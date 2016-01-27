@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h1>Thrift Javascript Implementation Demo</h1>
+        <p>This and the linked set of pages are to serve the purpose of demonstrating the usage of these Thrift libraries,
+        as well as performing useful functional and performance tests.</p>
+        <ul>
+            <li><a href="echo-test.html">Echo Test</a> - read/write basic types to the echo transport</li>
+        </ul>
+        <script>
+            return;
+            var iters = 1000, size=1000
+            function test1() {
+                var buffer =[];
+                for (var i = 0; i < size; i += 1) {
+                    buffer.push([1,2,3,4,5]);
+                }
+                return buffer.join();                
+            }
+            function test2() {
+                var buffer =[];
+                for (var i = 0; i < size; i += 1) {
+                    buffer = buffer.concat([1,2,3,4,5]);
+                }
+                return buffer;
+            }
+            
+            function testit(fun) {
+                var start = (new Date()).getTime();
+                for (var i = 0; i < iters; i += 1) {
+                    var x = fun();
+                }
+                var elapsed = (new Date()).getTime() - start,
+                    rate = iters/(elapsed/1000);
+                console.log(rate);
+            }
+            
+            testit(test1);
+            testit(test2);
+            
+            </script>
+    </body>
+</html>

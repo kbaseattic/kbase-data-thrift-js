@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="/bower_components/requirejs/require.js"></script>
+        <script src="/site/require-config.js"></script>
+    </head>
+    <body>
+        <h1>Thrift Binary Protocol<br>Coverage and Performance Test</h1>
+        <h2>Config</h2>
+        <table border="1" cellpadding="4" cellspacing="0" id="config">
+            <tr data-prop="iterations">
+                <th>Iterations</th>
+                <td data-prop="value"></td>
+            </tr>
+        </table>
+        <h2>Results</h2>
+        <table border="1" cellpadding="4" cellspacing="0" id="results">
+            <tr>
+                <th>Test</th>
+                <th>ops/sec</th>
+            </tr>
+            <tr>
+                <td>Read/Write String</td>
+                <td data-prop="string" style="text-align: right;"></td>
+            </tr>
+            <tr>
+                <td>Read/Write binary</td>
+                <td data-prop="binary" style="text-align: right;"></td>
+            </tr>
+            <tr>
+                <td>Read/Write list</td>
+                <td data-prop="list" style="text-align: right;"></td>
+            </tr>
+            <tr>
+                <td>Read/Write bool</td>
+                <td data-prop="bool" style="text-align: right;"></td>
+            </tr>
+            <tr>
+                <td>Read/Write byte</td>
+                <td data-prop="byte" style="text-align: right;"></td>
+            </tr>
+            <tr>
+                <td>Read/Write I16</td>
+                <td data-prop="I16" style="text-align: right;"></td>
+            </tr>
+            <tr>
+                <td>Read/Write I32</td>
+                <td data-prop="I32" style="text-align: right;"></td>
+            </tr>
+            <tr>
+                <td>Read/Write I64</td>
+                <td data-prop="I64" style="text-align: right;"></td>
+            </tr>
+        </table>
+        <script>
+            require([
+                'thrift_echo_transport',
+                'thrift_binary_protocol'
+            ], function (Thrift) {
+                var transport = new Thrift.EchoTransport(),
+                    protocol = new Thrift.TBinaryProtocol(transport),
+                    iters = 1000000,
+                    ticksPerSecond = 1000;
+
+                function dig(node, props) {
+                    var temp = node;
+                    if (typeof props === 'string') {
+                        props = props.split('.');
+                    }
+                    props.forEach(function (prop) {
+                        temp = temp.querySelector('[data-prop="' + prop + '"]');
+                        if (!temp) {
+                            return null;
+                        }
+                    });
+                    return temp;
+                }
+                function setProp(id, prop, value) {
+                    var objNode = document.getElementById(id),
+                        propNode = dig(objNode, prop);
+                    if (propNode) {
+                        propNode.innerHTML = value;
+                    }
+                }
+
+                // stolen from http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
+                function numberWithCommas(x) {
+                    var parts = x.toString().split(".");
+                    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    return parts.join(".");
+                }
+
+                function test(name, fun, debug) {
+                    var start = (new Date()).getTime(), i, elapsed, rate;
+                    for (i = 0; i < iters; i += 1) {
+                        transport.close();
+                        transport.open();
+                        fun();
+                    }
+                    elapsed = (new Date()).getTime() - start;
+                    rate = Math.round(ticksPerSecond * iters / elapsed);
+                    setProp('results', name, numberWithCommas(String(rate)));
+                }
+
+                function listEquals(l1, l2) {
+                    var i,
+                        len1 = l1.length,
+                        len2 = l2.length;
+                    if (len1 !== len2) {
+                        return false;
+                    }
+                    for (i = 0; i < len1; i += 1) {
+                        if (l1[i] !== l2[i]) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+
+                var tasks = [];
+
+                tasks.push(function () {
+                    setProp('config', 'iterations.value', numberWithCommas(iters));
+                });
+
+
+                // Get and Write String
+
+                tasks.push(function () {
+                    test('string', function () {
+                        var arg = 'hello';
+                        protocol.writeString(arg);
+                        var result = protocol.readString();
+                        if (arg !== result.value) {
+                            throw new Error('String error');
+                        }
+                    });
+                });
+
+                tasks.push(function () {
+                    test('binary', function () {
+                        var arg = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+                        protocol.writeBinary(arg);
+                        var result = protocol.readBinary();
+                        if (!listEquals(arg, result.value)) {
+                            throw new Error('Binary error');
+                        }
+                    });
+                });
+
+                tasks.push(function () {
+                    test('list', function () {
+                        var listInfo, list = [], i, result;
+                        protocol.writeListBegin(Thrift.Type.STRING, 2);
+                        ['peet', 'coco'].forEach(function (pet) {
+                            protocol.writeString(pet);
+                        });
+                        protocol.writeListEnd();
+
+                        listInfo = protocol.readListBegin();
+                        for (i = 0; i < listInfo.size; i += 1) {
+                            result = protocol.readString();
+                            if (result) {
+                                list.push(result.value);
+                            }
+                        }
+                        protocol.readListEnd();
+                    });
+                });
+
+                tasks.push(function () {
+                    test('bool', function () {
+                        var arg = true;
+                        protocol.writeBool(arg);
+                        var result = protocol.readBool();
+                        if (arg !== result.value) {
+                            throw new Error('Bool error');
+                        }
+                    });
+                });
+
+                tasks.push(function () {
+                    test('byte', function () {
+                        var arg = 100;
+                        protocol.writeByte(arg);
+                        var result = protocol.readByte();
+                        if (arg !== result.value) {
+                            throw new Error('Byte error');
+                        }
+                    });
+                });
+
+                tasks.push(function () {
+                    test('I16', function () {
+                        var arg = 10000;
+                        protocol.writeI16(arg);
+                        var result = protocol.readI16();
+                        if (arg !== result.value) {
+                            throw new Error('I16 error');
+                        }
+                    });
+                });
+
+                tasks.push(function () {
+                    test('I32', function () {
+                        var arg = 10000;
+                        protocol.writeI32(arg);
+                        var result = protocol.readI32();
+                        if (arg !== result.value) {
+                            throw new Error('I32 error');
+                        }
+                    });
+                });
+
+                tasks.push(function () {
+                    test('I64', function () {
+                        var arg = 10000;
+                        protocol.writeI64(arg);
+                        var result = protocol.readI64();
+                        if (arg !== result.value) {
+                            throw new Error('I64 error');
+                        }
+                    });
+                });
+                
+                function runTasks(tasksToRun) {
+                    var task = tasksToRun.shift();
+                    if (!task) {
+                        return;
+                    }
+                    try {
+                        task();
+                    } catch (ex) {
+                        console.log('ERROR running task');
+                        console.log(ex);
+                    } finally {
+                        window.setTimeout(function () {
+                            runTasks(tasksToRun);
+                        }, 0);                        
+                    }
+                }
+                runTasks(tasks);
+            });
+
+        </script>
+    </body>
+</html>

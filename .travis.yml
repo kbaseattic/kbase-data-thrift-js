@@ -1,0 +1,42 @@
+language: python
+python:
+  - "2.7"
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/core-develop/.cache/pip
+    - bower_components
+    - node_modules
+
+before_install:
+  - export PATH=$PATH:`pwd`/node_modules/.bin
+  - npm install -g bower
+
+install:
+  - bower update
+  - npm install
+  - cd src/python
+  - pip install -r requirements.txt
+  - python setup.py install -vv
+  - cd ../..
+
+before_script:
+  - export DISPLAY=:99.0
+  - export CHROME_BIN=chromium-browser
+  - sh -e /etc/init.d/xvfb start
+  - sleep 3 # give xvfb some time to start
+
+script:
+  - grunt --no-color test > test.out
+  # Test the output
+  - (grep  -c '>> OK' test.out >/dev/null && grep -c 'Done, without errors.' test.out >/dev/null) || false
+
+after_failure:
+  - cat test.out
+  - echo "***************** FILES **********************"
+  - ls -lRt
+
+after_success:
+  - cat test/coverage/lcov/lcov.info | ./node_modules/.bin/codecov

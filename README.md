@@ -1,8 +1,10 @@
 # Javascript clients for Apache Thrift
 
-An implementation of and transports and protocols for JavaScript Thrift library.
+An implementation of binary transports and protocols for JavaScript Thrift library,
+as well as some modifications to generated Thrift code to create a better modern
+JavaScript API using the bluebird Promises library.
 
-Authors:
+Authors: 
 
 * Most of the code lifted out of other projects:
     - The binary protocol was lifted from Radoslaw Gruchalski's project
@@ -17,11 +19,11 @@ From source:
 
 1. Clone the repository on github into a local directory
 
-        git clone https://github.com/kbase/thrift-js-binary-protocol.git
+        git clone https://github.com/kbase/kbase-data-thrift-js.git
 
 2.  Install with Node Package Manager (npm)
 
-        cd thrift-js-binary-protocol
+        cd kbase-data-thrift-js
         npm install
 
 ## Testing
@@ -58,7 +60,7 @@ Every time you add a new dependency, you need to modify three files. For example
 - transports
     - xhr
     - websocket
-    -echo
+    - echo
 - testing
 - documentation
 
@@ -81,69 +83,7 @@ Since this is the bedrock of Javascript thrift clients, it needs to be tested, s
 
 ## Running tests
 
+Use Grunt to run Karma tests:
 
+    grunt test    
 
-TODO
-- add code coverage support
-- test all types with echo transport
-- add functional testing of the xhr transport (need test server and spec first)
-
-## Usage
-
-`Thrift.BinaryProtocol` depends on `thrift` library being present.
-
-    <script src="thrift.js"></script>
-    <script src="thrift-binary-protocol.js"></script>
-    <script>
-      var transport = new Thrift.Transport("/dummy");
-      var protocol  = new Thrift.TBinaryProtocol(transport);
-      ...
-    </script>
-
-All methods of the standard `TBinaryProtocol` are implemented (ref).
-
-See the /site directory in this project for a complete example utilizing the echo transport.
-
-## Documentation
-
-
-## References
-
-- original binary protocol implementation:
-- thrift project:
-    - TODO: PROVIDE REFERENCE to Thrift protocol definitions
-
-## TODO
-
-- complete tests
-- create testing reference javascript service (use node js implementation)
-- review all code, improve comments
-- review licensing and attributions
-- add usage documentation
-- find cananoical references for thrift interfaces (tricky to find, thrift docs 
-are not very deep and not well organized.)
-    
-
-## License
-
-The MIT License (MIT)
-
-Copyright (c) 2015 Radoslaw Gruchalski <radek@gruchalski.com>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.

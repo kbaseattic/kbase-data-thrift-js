@@ -24,8 +24,7 @@
     "karma-phantomjs-launcher": "^0.2.3",
     "grunt-karma": "^0.12.1",
     "grunt-shell-spawn": "^0.3.10",
-    "corsproxy": "^1.4.0",
-    "kbase-data-thrift-clients": "0.1.0"
+    "corsproxy": "^1.4.0"
   },
   "license": "SEE LICENSE IN LICENSE"
 }

@@ -1,34 +1,31 @@
 {
-  "name": "thrift-js-binary-protocol",
-  "version": "1.0.0",
+  "name": "kbase-data-thrift-js",
   "keywords": [
-    "util",
-    "functional",
-    "server",
-    "client",
-    "browser"
+    "thrift", "client", "transport", "protocol"
   ],
-  "author": "erik",
+  "author": "kbase",
   "contributors": [],
   "dependencies": {},
-  "repository": "https://github.com/kbase/thrift-js-binary-protocol",
+  "repository": "https://github.com/kbase/kbase-data-thrift-js",
   "devDependencies": {
-    "jasmine": "2.3.2",
+    "jasmine": "^2.3.2",
     "jasmine-core": "^2.3.4",
     "karma": "^0.13.14",
-    "karma-chrome-launcher": "0.2.0",
-    "karma-coverage": "0.5.0",
-    "karma-firefox-launcher": "0.1.6",
-    "karma-jasmine": "0.3.6",
-    "karma-requirejs": "0.2.2",
-    "karma-safari-launcher": "0.1.1",
+    "karma-chrome-launcher": "^0.2.0",
+    "karma-coverage": "^0.5.0",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-jasmine": "^0.3.6",
+    "karma-requirejs": "^0.2.2",
+    "karma-safari-launcher": "^0.1.1",
     "requirejs": "^2.1.20",
-    "grunt": "0.4.5",
-    "grunt-shell": "1.1.2",
-    "phantomjs": "~1.9.19",
-    "karma-phantomjs-launcher": "~0.2.3",
-    "grunt-karma": "~0.12.1",
-    "grunt-shell-spawn": "~0.3.10",
-    "corsproxy": "~1.4.0"
-  }
+    "grunt": "^0.4.5",
+    "grunt-shell": "^1.1.2",
+    "phantomjs": "^1.9.19",
+    "karma-phantomjs-launcher": "^0.2.3",
+    "grunt-karma": "^0.12.1",
+    "grunt-shell-spawn": "^0.3.10",
+    "corsproxy": "^1.4.0",
+    "kbase-data-thrift-clients": "0.1.0"
+  },
+  "license": "SEE LICENSE IN LICENSE"
 }

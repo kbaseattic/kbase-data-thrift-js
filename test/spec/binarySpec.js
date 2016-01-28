@@ -73,10 +73,11 @@ define([
 
         it('Sets and gets a map of strings to ints', function() {
             var transport = new Thrift.EchoTransport(),
-                protocol = new Thrift.TBinaryProtocol(transport);
-
-            // Write out a dict
-            var input_i64 = {'peet': 123, 'coco': 456};
+                protocol = new Thrift.TBinaryProtocol(transport),
+                input_i64 = {
+                    peet: 123, 
+                    coco: 456
+                };
             protocol.writeMapBegin(Thrift.Type.STRING, Thrift.Type.I64, 2);
             Object.keys(input_i64).forEach(function (pet) {
                 protocol.writeString(pet);
@@ -98,6 +99,61 @@ define([
             }
             protocol.readMapEnd();
 
+        });
+        
+        // This is another way to test a Thrift map. Create a JS simple object,
+        // feed it into thrift, read it back and create the equivalent JS
+        // object, and compare the two.
+        it('Set and get map of String -> String', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = {
+                    hi: 'there', 
+                    greetings: 'earthling'
+                },
+                keys = Object.keys(arg);
+            protocol.writeMapBegin(Thrift.Type.STRING, Thrift.Type.STRING, keys.length);
+            keys.forEach(function (key) {
+                protocol.writeString(key);
+                protocol.writeString(arg[key]);
+            });
+            protocol.writeMapEnd();
+            
+            var mapHeader = protocol.readMapBegin(), result = {};            
+            for (var i = 0; i < mapHeader.size; i += 1) {
+                var key = protocol.readString().value,
+                    value = protocol.readString().value;
+                result[key] = value;
+            }
+            protocol.readMapEnd();
+            
+            // todo evaluate header as well.
+            
+            expect(result).toEqual(arg);                
+        });
+        
+        it('Sets and gets a Set of strings', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                listInfo, i, result,
+                arg = ['john', 'frank', 'alice'],
+                set = [];
+            protocol.writeSetBegin(Thrift.Type.STRING, arg.length);
+            arg.forEach(function (name) {
+                protocol.writeString(name);
+            });
+            protocol.writeSetEnd();
+
+            listInfo = protocol.readSetBegin();
+            for (i = 0; i < listInfo.size; i += 1) {
+                result = protocol.readString();
+                if (result) {
+                    set.push(result.value);
+                }
+            }
+            protocol.readSetEnd();
+
+            expect(set).toEqual(arg);
         });
 
         it('Set and get bool', function () {

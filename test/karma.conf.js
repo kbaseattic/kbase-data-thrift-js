@@ -1,8 +1,8 @@
 // Karma configuration
 
-var chrome_browser = 'Chrome'
+var chrome_browser = 'Chrome';
 if (process.env.TRAVIS) {
-    chrome_browser = 'Chrome_TravisCI'
+    chrome_browser = 'Chrome_TravisCI';
 }
 
 module.exports = function(config) {
@@ -24,7 +24,7 @@ module.exports = function(config) {
         'karma-phantomjs-launcher',
         'karma-coverage',
         'karma-requirejs',
-        'karma-chrome-launcher',
+        'karma-chrome-launcher'
         //'karma-firefox-launcher',
         //'karma-safari-launcher'
     ],
@@ -43,18 +43,17 @@ module.exports = function(config) {
        */
       {pattern: 'src/js/lib/*.js', included: false},
       {pattern: 'src/js/test/basic/*.js', included: false},
-      {pattern: 'test/spec/*Spec.js', included: false},
+      {pattern: 'test/spec/binarySpec.js', included: false},
       {pattern: 'bower_components/**/*.js', 'included': false},
 
-      'test/main-test.js',
+      'test/main-test.js'
     ],
 
 
     // list of files to exclude
     exclude: [
-      '**/*.swp',
+      '**/*.swp'
     ],
-
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
@@ -114,5 +113,5 @@ module.exports = function(config) {
         }
     }
 
-  })
-}
+  });
+};

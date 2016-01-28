@@ -38,7 +38,7 @@ Every time you add a new dependency, you need to modify three files. For example
 
 1.a. Add the package to the "devDependencies" property in `bower.json`:
 
-        "bluebird": "2.10.2",
+        "bluebird": "^3.1.0",
 
 1.b. Now you can install the package:
 
@@ -69,6 +69,7 @@ Every time you add a new dependency, you need to modify three files. For example
 Most of the code lifted out of other projects:
     - The binary protocol was lifted from Radoslaw Gruchalski's project
     - The XMLHttpRequest and other transports extracted from the Thrift core
+        - XMLHttpRequest modified to remove jquery dependency and return detailed exceptions
 
 The echo transport is our own contribution. It is for testing.
 

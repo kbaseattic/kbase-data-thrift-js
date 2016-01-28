@@ -41,14 +41,41 @@ define([
     'thrift'
 ], function (Thrift) {
     'use strict';
+    
+     /*
+     * A base Exception object for 
+     * 
+     * @returns {thrift-transport-xhr_L25.TTransportError}
+     */
+    function TProtocolException() {
+        this.name = 'TProtocolException';
+    }
+    TProtocolException.prototype = Object.create(Thrift.TException.prototype);
+    TProtocolException.prototype.constructor = TProtocolException;
+    Thrift.TTransportError = TProtocolException;
+    
+    function TBinaryProtocolException(error) {
+        this.name = 'TBinaryProtocolException';
+        this.reason = error.reason;
+        this.message = error.message;
+        this.suggestions = error.suggestions;
+        this.data = error.data;
+        this.stack = (new Error()).stack;
+    }
+    // Steal the function prototype from Thrift.TException
+    TBinaryProtocolException.prototype = Object.create(TProtocolException.prototype);
+    TBinaryProtocolException.prototype.constructor = TBinaryProtocolException;
+    Thrift.TBinaryProtocolException = TBinaryProtocolException;
+    
+    
     Thrift.TBinaryProtocol = function (transport, strictRead, strictWrite) {
         this.transport = transport;
         this.strictRead = (strictRead !== undefined ? strictRead : false);
         this.strictWrite = (strictWrite !== undefined ? strictWrite : false);
-        // This is needed to avoid use, initialized, in the map
-        // type processing logic
+        // this is just to work around one small section of code in maps which uses
+        // this rtack thing, which is an implementation detail of json that
+        // leaked into the generator (or so I think.)
         this.rstack = [];
-        this.rpos = [0];
     };
 
     Thrift.TBinaryProtocol.VERSION_MASK = 0xffff0000;
@@ -295,11 +322,14 @@ define([
          * @returns {AnonReadMessageBeginReturn}
          */
         readMessageBegin: function () {
-            var version = this.readI32().value;
-            var name, type, seqid;
+            var version = this.readI32().value,
+                name, type, seqid;
             if (version < 0) {
                 if (version & Thrift.TBinaryProtocol.VERSION_MASK !== Thrift.TBinaryProtocol.VERSION_1) {
-                    throw new Thrift.TException('Missing version identifier');
+                    throw new Thrift.TBinaryProtocolException({
+                        reason: 'MissingVersionIdentifier',
+                        message: 'Missing version identifier'
+                    });
                 }
                 type = version & Thrift.TBinaryProtocol.TYPE_MASK;
                 name = this.readString().value;
@@ -307,7 +337,10 @@ define([
                 return {fname: name, mtype: type, rseqid: seqid};
             } else {
                 if (this.strictRead) {
-                    throw new Thrift.TException('No version identifier, old protocol client?');
+                    throw new Thrift.TBinaryProtocolException({
+                        reason: 'InvalidVersionIdentifier',
+                        message: 'No version identifier, old protocol client?'
+                    });
                 }
                 name = this.readMultipleAsString(version);
                 type = this.readByte().value;

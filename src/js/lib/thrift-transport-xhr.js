@@ -25,15 +25,20 @@ define([
 ], function (Thrift, Promise) {
     'use strict';
     
-    function TTransportError() {
-        this.name = 'TTransportError';
+    /*
+     * A base Exception object for 
+     * 
+     * @returns {thrift-transport-xhr_L25.TTransportError}
+     */
+    function TTransportException() {
+        this.name = 'TTransportException';
     }
-    TTransportError.prototype = Object.create(Thrift.TException.prototype);
-    TTransportError.prototype.constructor = TTransportError;
-    Thrift.TTransportError = TTransportError;
+    TTransportException.prototype = Object.create(Thrift.TException.prototype);
+    TTransportException.prototype.constructor = TTransportException;
+    Thrift.TTransportError = TTransportException;
     
-    function TXHRTransportError(error) {
-        this.name = 'TXHRTransportError';
+    function TXHRTransportException(error) {
+        this.name = 'TXHRTransportException';
         this.reason = error.reason;
         this.message = error.message;
         this.suggestions = error.suggestions;
@@ -41,9 +46,9 @@ define([
         this.stack = (new Error()).stack;
     }
     // Steal the function prototype from Thrift.TException
-    TXHRTransportError.prototype = Object.create(TTransportError.prototype);
-    TXHRTransportError.prototype.constructor = TXHRTransportError;
-    Thrift.TXHRTransportError = TXHRTransportError;
+    TXHRTransportException.prototype = Object.create(TTransportException.prototype);
+    TXHRTransportException.prototype.constructor = TXHRTransportException;
+    Thrift.TXHRTransportException = TXHRTransportException;
     
 
     /**
@@ -68,7 +73,7 @@ define([
         this.timeout = (options && options.timeout);
         this.send_buf = [];
         this.byte_buf = [];
-        this.recv_buf = [];        
+        this.recv_buf = new Uint8Array(0);     
     };
 
     Thrift.TXHRTransport.prototype = {
@@ -114,49 +119,49 @@ define([
                 var xhr = new XMLHttpRequest();
                 xhr.onload = function (e) {
                     if (xhr.status === 502) {
-                        reject(new TXHRTransportError({
+                        reject(new TXHRTransportException({
                             reason: 'ProxyError',
                             message: 'The thrift service is not running behind the proxy',
                             data: xhr
                         }));
                         return;
                     } else if (xhr.status === 500) {
-                        reject(new TXHRTransportError({
+                        reject(new TXHRTransportException({
                             reason: 'ServiceError',
                             message: 'The thrift service or proxy has crashed',
                             data: xhr
                         }));
                         return;
                     } else if (xhr.status === 400) {
-                        reject(new TXHRTransportError({
+                        reject(new TXHRTransportException({
                             reason: 'RequestError',
                             message: 'There was an error in the request',
                             data: xhr
                         }));
                         return;
                     } else if (xhr.status === 404) {
-                        reject(new TXHRTransportError({
+                        reject(new TXHRTransportException({
                             reason: 'NotFound',
                             message: 'The thrift service could not be contacted, incorrect request',
                             data: xhr
                         }));
                         return;
                     } else if (xhr.status >= 400 && xhr.status < 500) {
-                        reject(new TXHRTransportError({
+                        reject(new TXHRTransportException({
                             reason: 'GeneralClientError',
                             message: 'An error was reported, blamed on the client request',
                             data: xhr
                         }));
                         return;
                     } else if (xhr.status >= 500) {
-                        reject(new TXHRTransportError({
+                        reject(new TXHRTransportException({
                             reason: 'GeneralServerError',
                             message: 'An error was reported, blamed on the server',
                             data: xhr
                         }));
                         return;
                     } else if (xhr.status !== 200) {
-                        reject(new TXHRTransportError({
+                        reject(new TXHRTransportException({
                             reason: 'UnexpectedResponse',
                             message: 'The server responded with an unexpected code',
                             data: xhr
@@ -175,7 +180,8 @@ define([
                     }
                 };
                 xhr.ontimeout = function (e) {
-                    reject(new TXHRTransportError({
+                    
+                    reject(new TXHRTransportException({
                         reason: 'RequestTimeout',
                         message: 'General request timeout',
                         suggestions: 'The service device is not reachable, the client tried until the timeout period expired',
@@ -183,7 +189,7 @@ define([
                     }));
                 };
                 xhr.onerror = function (e) {
-                    reject(new TXHRTransportError({
+                    reject(new TXHRTransportException({
                         reason: 'RequestError',
                         message: 'General request error',
                         suggestions: 'The service device is operating, but the http server is unavailable.',
@@ -191,7 +197,7 @@ define([
                     }));
                 };
                 xhr.onabort = function (e) {
-                    reject(new TXHRTransportError({
+                    reject(new TXHRTransportException({
                         type: 'ThriftError',
                         reason: 'RequestAbort',
                         message: 'General request abort',
@@ -204,7 +210,7 @@ define([
                 try {
                     xhr.open('POST', thriftTransport.url, true);
                 } catch (ex) {
-                    reject(new TXHRTransportError({
+                    reject(new TXHRTransportException({
                         reason: 'ConnectionOpenError',
                         message: 'Error opening connecting to to thrift http service',
                         suggestions: 'This is probably a malformed url',
@@ -218,7 +224,7 @@ define([
                     xhr.responseType = 'arraybuffer';
                     xhr.send(new Uint8Array(thriftTransport.send_buf));
                 } catch (ex) {
-                    reject(new TXHRTransportError({
+                    reject(new TXHRTransportException({
                         type: 'ThriftError',
                         reason: 'ConnectionSendError',
                         message: 'Error sending data to thrift http service',

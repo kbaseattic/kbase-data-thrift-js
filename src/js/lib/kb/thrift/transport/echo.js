@@ -20,7 +20,7 @@
 /*jshint white: true */
 
 define([
-    'thrift'
+    '../core'
 ], function (Thrift) {
     'use strict';
 

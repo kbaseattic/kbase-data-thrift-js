@@ -11,7 +11,7 @@
  *     var protocol  = new Thrift.Protocol(transport);
  */
 define([
-    'thrift'
+    '../core'
 ], function (Thrift) {
     Thrift.TJSONProtocol = function (transport) {
         this.tstack = [];

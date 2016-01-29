@@ -1,0 +1,6 @@
+## KBase Package Installation 
+---
+moduleType: amd
+package:
+    type: namespaced
+    path: src/js

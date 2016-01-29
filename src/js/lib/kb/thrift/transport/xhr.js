@@ -20,7 +20,7 @@
 /*jshint white: true */
 
 define([
-    'thrift', 
+    '../core', 
     'bluebird'
 ], function (Thrift, Promise) {
     'use strict';

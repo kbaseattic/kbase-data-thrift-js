@@ -38,7 +38,7 @@
  *     var protocol  = new Thrift.TBinaryProtocol(transport);
  */
 define([
-    'thrift'
+    '../core'
 ], function (Thrift) {
     'use strict';
     

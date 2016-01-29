@@ -11,8 +11,9 @@
     "main": "install.yml",
     "license": "SEE LICENSE in LICENSE",
     "ignore": [
-        "site",
-        "src/python",
+        "/site",
+        "/src/python",
+        "/test",
         "Gruntfile.js",
         "package.json"
     ],
@@ -21,7 +22,7 @@
         "url": "https://github.com/kbase/kbase-data-thrift-js.git"
     },
     "dependencies": {
-        "requirejs": "^2.1.0",
-        "bluebird": "^3.1.0"
+        "requirejs": "^2.0.0",
+        "bluebird": "^3.0.0"
     }
 }

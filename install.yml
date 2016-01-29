@@ -3,4 +3,4 @@
 moduleType: amd
 package:
     type: namespaced
-    path: src/js
+    path: src/js/lib

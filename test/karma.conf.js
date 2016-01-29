@@ -41,15 +41,14 @@ module.exports = function(config) {
        * It's cleaner to just load the list of them by hand, then
        * have the Require apparatus take over.
        */
-      {pattern: 'src/js/lib/*.js', included: false},
+      {pattern: 'src/js/lib/**/*.js', included: false},
       {pattern: 'src/js/test/basic/*.js', included: false},
-      {pattern: 'test/spec/binarySpec.js', included: false},
+      {pattern: 'test/spec/*Spec.js', included: false},
       {pattern: 'bower_components/**/*.js', 'included': false},
-
+      
       'test/main-test.js'
     ],
-
-
+    
     // list of files to exclude
     exclude: [
       '**/*.swp'

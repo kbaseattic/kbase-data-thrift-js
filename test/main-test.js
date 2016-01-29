@@ -9,19 +9,20 @@ for (var file in window.__karma__.files) {
 }
 //console.log('All tests:', tests);
 
-var libpath = 'src/js/lib/';
-var testpath = 'src/js/test/';
-var bowerpath = 'bower_components/';
+//var libpath = 'src/js/lib/';
+//var testpath = 'src/js/test/';
+var testpath = '../test/';
+var bowerpath = '../../../bower_components/';
 
 requirejs.config({
     // Karma serves files from '/base', which is the root directory
-    baseUrl: '/base',
+    baseUrl: '/base/src/js/lib',
 
     paths: {
-        thrift: libpath + 'thrift-core',
-        thrift_echo_transport: libpath + 'thrift-transport-echo',
-        thrift_xhr_transport: libpath + 'thrift-transport-xhr',
-        thrift_binary_protocol: libpath + 'thrift-protocol-binary',
+        //thrift: libpath + 'thrift-core',
+        //thrift_echo_transport: libpath + 'thrift-transport-echo',
+        //thrift_xhr_transport: libpath + 'thrift-transport-xhr',
+        //thrift_binary_protocol: libpath + 'thrift-protocol-binary',
         kb_basic_types: testpath + 'basic/basic_types',
         kb_basic_service: testpath + 'basic/thrift_service',
         kb_basic: testpath + 'basic/basic',
@@ -29,7 +30,7 @@ requirejs.config({
     },
 
     shim: {
-        'underscore': {
+        underscore: {
             exports: '_'
         }
     },

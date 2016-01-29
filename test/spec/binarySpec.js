@@ -6,8 +6,8 @@
  white: true
  */
 define([
-    'thrift_echo_transport',
-    'thrift_binary_protocol'
+    'kb/thrift/transport/echo',
+    'kb/thrift/protocol/binary'
 ], function (Thrift) {
     'use strict';
     function listEquals(l1, l2) {

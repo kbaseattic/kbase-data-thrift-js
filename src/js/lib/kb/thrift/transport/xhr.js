@@ -174,8 +174,8 @@ define([
                     try {
                         resolve(recv_method.call(client));
                     } catch (ex) {
-                        console.log('REJECTED in onload');
-                        console.log(ex);
+//                        console.log('REJECTED in onload');
+//                        console.log(ex);
                         reject(ex);
                     }
                 };

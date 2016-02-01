@@ -96,7 +96,7 @@ define([
             codePoint = codePoints[index];
             bytes = bytes.concat(encodeCodePoint(codePoint));
         }
-        var result =  Uint8Array.from(bytes);
+        var result =  new Uint8Array(bytes);
         return result;
     }
 

@@ -301,9 +301,9 @@ define([
             this.send_buf.push(b);
         },
         write: function (buf) {
-             buf.forEach(function (b) {
+            buf.forEach(function (b) {
                 this.send_buf.push(b);
-            })
+            });
         },
         /**
          * Returns the send buffer.

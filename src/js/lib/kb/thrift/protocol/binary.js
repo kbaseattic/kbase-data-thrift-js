@@ -613,7 +613,7 @@ define([
             for (i = 0; i < utf8String.length; i += 1) {
                 utf8Array.push(utf8String.charCodeAt(i));
             }
-            return Uint8Array.from(utf8Array);
+            return new Uint8Array(utf8Array);
         },
         /*
          * First makes a "string" out of the raw bytes, then escapes everything,

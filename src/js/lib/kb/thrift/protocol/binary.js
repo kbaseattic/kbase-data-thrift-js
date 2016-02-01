@@ -620,6 +620,8 @@ define([
          * then unescapes into utf8. 
          */
         decode_utf8: function (bytes) {
+            console.log('BYTES');
+            console.log(bytes);
             var string = String.fromCharCode.apply(null, bytes);
             return decodeURIComponent(escape(string));
         }

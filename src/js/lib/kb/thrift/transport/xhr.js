@@ -303,7 +303,7 @@ define([
         write: function (buf) {
             buf.forEach(function (b) {
                 this.send_buf.push(b);
-            });
+            }.bind(this));
         },
         /**
          * Returns the send buffer.

@@ -295,20 +295,15 @@ define([
 
         /** Serializes a string */
         writeString: function (str) {
-            var s = this.encode_utf8(str),
-                strLen = s.length;
-            this.writeI32(s.length);
-            for (var i = 0; i < strLen; i += 1) {
-                this.transport.writeByte(s.charCodeAt(i));
-            }
+            // var bytes = utf8.encode(str);
+            var bytes = this.encode_utf8(str);
+            this.writeI32(bytes.length);
+            this.transport.write(bytes);
         },
         /** Serializes abritrary array of bytes */
         writeBinary: function (buf) {
             this.writeI32(buf.length);
             this.transport.write(buf);
-//            buf.forEach(function (byte) {
-//                this.transport.writeByte(byte);
-//            }.bind(this));
         },
         /**
          @class
@@ -513,18 +508,24 @@ define([
          next value found in the protocol buffer */
         readString: function () {
             var size = this.readI32().value,
-                bytes = this.readMultiple(size);
-            return {value: this.decode_utf8(this.stringFromByteArray(bytes))};
+                bytes = this.readMultiple(size),
+                string = this.decode_utf8(bytes);
+            return {
+                value: string
+            };
         },
         readBinary: function () {
             var size = this.readI32().value;
-            return {value: this.readMultiple(size)};
+            return {
+                value: this.readMultiple(size)
+            };
         },
         /** Returns the an object with a value property set to the 
          next value found in the protocol buffer */
         readMultipleAsString: function (len) {
             var bytes = this.readMultiple(len);
-            return this.decode_utf8(this.stringFromByteArray(bytes));
+            // return utf8.decode(bytes);
+            return this.decode_utf8(bytes);
         },
         /** Returns the an object with a value property set to the 
          next value found in the protocol buffer */
@@ -593,23 +594,36 @@ define([
                     return null;
             }
         },
+        
         // utils:
+        
+        // NB the utf8 functions are a hack. See
+        // http://monsur.hossa.in/2012/07/20/utf-8-in-javascript.html
+        // for the explanation.
 
+        /*
+         * First encode non-ascii characters into utf8 sequences, then
+         * undo the encoding but each encoded byte goes into a single character.
+         * The resulting string is not meant to be used as a string, but as a 
+         * sequence of bytes.
+         */
         encode_utf8: function (s) {
-            return unescape(encodeURIComponent(s));
+            var utf8String = unescape(encodeURIComponent(s)),
+                utf8Array = [], i;
+            for (i = 0; i < utf8String.length; i += 1) {
+                utf8Array.push(utf8String.charCodeAt(i));
+            }
+            return Uint8Array.from(utf8Array);
         },
-        decode_utf8: function (s) {
-            return decodeURIComponent(escape(s));
-        },
-        stringFromByteArray: function (barr) {
-            // no try catch here, this will not work correctly for all Unicode characters
-            // if an array is used instead of Uint8Array.
-            // This is definitely working in the browser. PhantomJS has problems with this code.
-            // More details here:
-            //  - https://github.com/mozilla/pdf.js/issues/1955
-            //  - https://github.com/mozilla/pdf.js/issues/1008
-            return String.fromCharCode.apply(null, new Uint8Array(barr));
+        /*
+         * First makes a "string" out of the raw bytes, then escapes everything,
+         * then unescapes into utf8. 
+         */
+        decode_utf8: function (bytes) {
+            var string = String.fromCharCode.apply(null, bytes);
+            return decodeURIComponent(escape(string));
         }
+    
     };
 
     return Thrift;

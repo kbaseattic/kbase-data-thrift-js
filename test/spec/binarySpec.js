@@ -37,6 +37,16 @@ define([
             expect(result.value).toBe(arg);
         });
 
+        it('Sets and gets a very unicode string', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = 'holá';
+            protocol.writeString(arg);
+            var result = protocol.readString();
+            expect(result.value).toBe(arg);
+        });
+
+
 
         it('Sets and gets a binary (array of bytes)', function () {
             var arg = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],

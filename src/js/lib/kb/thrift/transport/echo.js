@@ -100,20 +100,13 @@ define([
          */
         writeByte: function (b) {
             this.buffer.push(b);
-            this.bufferLength += 1
         },
         write: function (buf) {
-            this.buffer = this.buffer.concat(buf);
+            buf.forEach(function (byte) {
+                this.buffer.push(byte);
+            }.bind(this));
         }
     };
     
     return Thrift;
 });
-
-
-
-
-
-
-
-

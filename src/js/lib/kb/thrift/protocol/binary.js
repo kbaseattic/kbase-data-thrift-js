@@ -38,8 +38,9 @@
  *     var protocol  = new Thrift.TBinaryProtocol(transport);
  */
 define([
-    '../core'
-], function (Thrift) {
+    '../core',
+    './utf8'
+], function (Thrift, utf8) {
     'use strict';
     
      /*
@@ -295,8 +296,7 @@ define([
 
         /** Serializes a string */
         writeString: function (str) {
-            // var bytes = utf8.encode(str);
-            var bytes = this.encode_utf8(str);
+            var bytes = utf8.encode(str);
             this.writeI32(bytes.length);
             this.transport.write(bytes);
         },
@@ -509,7 +509,7 @@ define([
         readString: function () {
             var size = this.readI32().value,
                 bytes = this.readMultiple(size),
-                string = this.decode_utf8(bytes);
+                string = utf8.decode(bytes);
             return {
                 value: string
             };
@@ -524,8 +524,7 @@ define([
          next value found in the protocol buffer */
         readMultipleAsString: function (len) {
             var bytes = this.readMultiple(len);
-            // return utf8.decode(bytes);
-            return this.decode_utf8(bytes);
+            return utf8.decode(bytes);
         },
         /** Returns the an object with a value property set to the 
          next value found in the protocol buffer */
@@ -593,39 +592,7 @@ define([
                     this.readListEnd();
                     return null;
             }
-        },
-        
-        // utils:
-        
-        // NB the utf8 functions are a hack. See
-        // http://monsur.hossa.in/2012/07/20/utf-8-in-javascript.html
-        // for the explanation.
-
-        /*
-         * First encode non-ascii characters into utf8 sequences, then
-         * undo the encoding but each encoded byte goes into a single character.
-         * The resulting string is not meant to be used as a string, but as a 
-         * sequence of bytes.
-         */
-        encode_utf8: function (s) {
-            var utf8String = unescape(encodeURIComponent(s)),
-                utf8Array = [], i;
-            for (i = 0; i < utf8String.length; i += 1) {
-                utf8Array.push(utf8String.charCodeAt(i));
-            }
-            return new Uint8Array(utf8Array);
-        },
-        /*
-         * First makes a "string" out of the raw bytes, then escapes everything,
-         * then unescapes into utf8. 
-         */
-        decode_utf8: function (bytes) {
-            console.log('BYTES');
-            console.log(bytes);
-            var string = String.fromCharCode.apply(null, bytes);
-            return decodeURIComponent(escape(string));
         }
-    
     };
 
     return Thrift;

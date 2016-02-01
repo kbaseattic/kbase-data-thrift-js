@@ -71,17 +71,17 @@ define([
             return [codePoint];
         }
         if ((codePoint & 0xFFFFF800) === 0) { // 2-byte sequence
-            seq.unshift(((codePoint >> 6) & 0x1F) | 0xC0);
+            seq.push(((codePoint >> 6) & 0x1F) | 0xC0);
         } else if ((codePoint & 0xFFFF0000) === 0) { // 3-byte sequence
             checkScalarValue(codePoint);
-            seq.unshift(((codePoint >> 12) & 0x0F) | 0xE0);
-            seq.unshift(createByte(codePoint, 6));
+            seq.push(((codePoint >> 12) & 0x0F) | 0xE0);
+            seq.push(createByte(codePoint, 6));
         } else if ((codePoint & 0xFFE00000) === 0) { // 4-byte sequence
-            seq.unshift(((codePoint >> 18) & 0x07) | 0xF0);
-            seq.unshift(createByte(codePoint, 12));
-            seq.unshift(createByte(codePoint, 6));
+            seq.push(((codePoint >> 18) & 0x07) | 0xF0);
+            seq.push(createByte(codePoint, 12));
+            seq.push(createByte(codePoint, 6));
         }
-        seq.unshift((codePoint & 0x3F) | 0x80);
+        seq.push((codePoint & 0x3F) | 0x80);
         return seq;
     }
 
@@ -143,10 +143,7 @@ define([
         }
 
         // 2-byte sequence
-            console.log((byte1 & 0xE0));
-            console.log(0xC0);
         if ((byte1 & 0xE0) === 0xC0) {
-            console.log((byte1 & 0xE0));
             var byte2 = readContinuationByte(state);
             codePoint = ((byte1 & 0x1F) << 6) | byte2;
             if (codePoint >= 0x80) {
@@ -178,11 +175,6 @@ define([
                 return codePoint;
             }
         }
-        console.log(state);
-        console.log(byte1);
-        console.log(byte2);
-        console.log(byte3);
-        console.log(byte4);
         throw new Error('Invalid UTF-8 detected');
     }
 

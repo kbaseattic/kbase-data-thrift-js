@@ -1,202 +1,343 @@
-/*global define*/
-/*jslint white:true,browser:true */
 define([
 ], function () {
-    'use strict';
+    /**
+     * Takes a normal string and creates a byte array containing a utf-8
+     * encoded version
+     *
+     * @param{String} str
+     *     The string to be encoded.
+     *
+     * @param{Object} options
+     * @config{boolean=true} strict
+     *
+     * @return{Uint8Array}
+     *     An array of bytes containing the input string encoded as utf8.  The
+     *     backing buffer is allocated to exactly fit the string.
+     *
+     * @see utf8.decode
+     * @nosideeffects
+     */
+    function encode(str, options) {
+        var i, len,
+            c,
+            low, high,
+            utf8, idx,
+            rtrn;
 
-    // Taken from https://mths.be/punycode
-    function ucs2decode(string) {
-        var output = [],
-            counter = 0,
-            length = string.length,
-            character,
-            extra;
-        for (counter = 0; counter < length; counter += 1) {
-            character = string.charCodeAt(counter);
-            if (character >= 0xD800 && character <= 0xDBFF && counter < length) {
-                // high surrogate, and there is a next character
-                counter += 1;
-                extra = string.charCodeAt(counter);
-                if ((extra & 0xFC00) === 0xDC00) { // low surrogate
-                    output.push(((character & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
-                } else {
-                    // unmatched surrogate; only append this code unit, in case the next
-                    // code unit is the high surrogate of a surrogate pair
-                    output.push(character);
-                    counter -= 1;
+        if ((typeof str !== "string") &&
+            !(str instanceof String)) {
+            throw new TypeError("expected String as first argument");
+        }
+
+        len = str.length;
+        i = 0;
+
+        utf8 = new Uint8Array(len * 4);
+        idx = 0;
+
+        while (i < len) {
+
+            //
+            //
+            // Read next codepoint from input string
+            //
+
+            c = str.charCodeAt(i++);
+            if (0 > c || c > 0xffff) {
+                throw new Error("character out of range");
+            }
+
+            // if character contains the high part of surrogate pair attempt
+            // to read the second part
+            if (0xd800 <= c && c <= 0xdfff) {
+                if (len - i < 1) {
+                    throw new Error("unexpected end of string");
                 }
+
+                high = c - 0xd800;
+                low = str.charCodeAt(i++) - 0xdc00;
+
+                if (0 > low || low > 0x3ff) {
+                    throw new Error("invalid character as second part of " +
+                        "surrogate pair");
+                }
+
+                c = (high << 10 | low) + 0x10000;
+
+            }
+
+            //
+            //
+            // Append the code point to the output array
+            //
+
+            if (c <= 0x7f) {
+                //
+                // 0xxx xxxx
+                //
+
+                utf8[idx++] = c;
+
+
+            } else if (c <= 0x7ff) {
+                //
+                // 110x xxxx   10xx xxxx
+                //
+
+                utf8[idx++] = 0xc0 | ((c >>> 6));
+                utf8[idx++] = 0x80 | ((c) & 0x3f);
+
+
+            } else if (c <= 0xffff) {
+                //
+                // 1110 xxxx   10xx xxxx   10xx xxxx
+                //
+
+                utf8[idx++] = 0xe0 | ((c >>> 12));
+                utf8[idx++] = 0x80 | ((c >>> 6) & 0x3f);
+                utf8[idx++] = 0x80 | ((c) & 0x3f);
+
+
+            } else if (c <= 0x10ffff) {
+                //
+                // 1111 0xxx   10xx xxxx   10xx xxxx   10xx xxxx
+                //
+
+                utf8[idx++] = 0xf0 | ((c >>> 18));
+                utf8[idx++] = 0x80 | ((c >>> 12) & 0x3f);
+                utf8[idx++] = 0x80 | ((c >>> 6) & 0x3f);
+                utf8[idx++] = 0x80 | ((c) & 0x3f);
+
+
             } else {
-                output.push(character);
+                throw new Error("character out of range");
             }
         }
-        return output;
-    }
 
-    // Taken from https://mths.be/punycode
-    function ucs2encode(array) {
-        var length = array.length,
-            index = -1,
-            value,
-            output = '';
-        while (++index < length) {
-            value = array[index];
-            if (value > 0xFFFF) {
-                value -= 0x10000;
-                output += String.fromCharCode(value >>> 10 & 0x3FF | 0xD800);
-                value = 0xDC00 | value & 0x3FF;
-            }
-            output += String.fromCharCode(value);
-        }
-        return output;
-    }
-
-    function checkScalarValue(codePoint) {
-        if (codePoint >= 0xD800 && codePoint <= 0xDFFF) {
-            throw new Error(
-                'Lone surrogate U+' + codePoint.toString(16).toUpperCase() +
-                ' is not a scalar value'
-                );
-        }
-    }
-    /*--------------------------------------------------------------------------*/
-
-    function createByte(codePoint, shift) {
-        return String.fromCharCode(((codePoint >> shift) & 0x3F) | 0x80);
-    }
-
-    function encodeCodePoint(codePoint) {
-        var seq = [];
-        if ((codePoint & 0xFFFFFF80) === 0) { // 1-byte sequence
-            // return String.fromCharCode(codePoint);
-            return [codePoint];
-        }
-        if ((codePoint & 0xFFFFF800) === 0) { // 2-byte sequence
-            seq.push(((codePoint >> 6) & 0x1F) | 0xC0);
-        } else if ((codePoint & 0xFFFF0000) === 0) { // 3-byte sequence
-            checkScalarValue(codePoint);
-            seq.push(((codePoint >> 12) & 0x0F) | 0xE0);
-            seq.push(createByte(codePoint, 6));
-        } else if ((codePoint & 0xFFE00000) === 0) { // 4-byte sequence
-            seq.push(((codePoint >> 18) & 0x07) | 0xF0);
-            seq.push(createByte(codePoint, 12));
-            seq.push(createByte(codePoint, 6));
-        }
-        seq.push((codePoint & 0x3F) | 0x80);
-        return seq;
-    }
-
-    function utf8encode(string) {
-        var codePoints = ucs2decode(string),
-            length = codePoints.length,
-            index = -1,
-            codePoint,
-            bytes = [];
-        for (index = 0; index < length; index += 1) {
-        // while (++index < length) {
-            codePoint = codePoints[index];
-            bytes = bytes.concat(encodeCodePoint(codePoint));
-        }
-        var result =  new Uint8Array(bytes);
-        return result;
-    }
-
-    /*--------------------------------------------------------------------------*/
-
-    function readContinuationByte(state) {
-        if (state.byteIndex >= state.byteCount) {
-            throw new Error('Invalid byte index');
-        }
-
-        var continuationByte = state.byteArray[state.byteIndex] & 0xFF;
-        state.byteIndex += 1;
-
-        if ((continuationByte & 0xC0) === 0x80) {
-            return continuationByte & 0x3F;
-        }
-
-        // If we end up here, it’s not a continuation byte
-        throw new Error('Invalid continuation byte');
-    }
-
-    function decodeSymbol(state) {
-        var byte1,
-            byte2,
-            byte3,
-            byte4,
-            codePoint;
-
-        if (state.byteIndex > state.byteCount) {
-            throw new Error('Invalid byte index');
-        }
-
-        if (state.byteIndex === state.byteCount) {
-            return false;
-        }
-
-        // Read first byte
-        byte1 = state.byteArray[state.byteIndex] & 0xFF;
-        state.byteIndex += 1;
-
-        // 1-byte sequence (no continuation bytes)
-        if ((byte1 & 0x80) === 0) {
-            return byte1;
-        }
-
-        // 2-byte sequence
-        if ((byte1 & 0xE0) === 0xC0) {
-            var byte2 = readContinuationByte(state);
-            codePoint = ((byte1 & 0x1F) << 6) | byte2;
-            if (codePoint >= 0x80) {
-                return codePoint;
-            }
-            throw new Error('Invalid continuation byte');
-        }
-
-        // 3-byte sequence (may include unpaired surrogates)
-        if ((byte1 & 0xF0) === 0xE0) {
-            byte2 = readContinuationByte(state);
-            byte3 = readContinuationByte(state);
-            codePoint = ((byte1 & 0x0F) << 12) | (byte2 << 6) | byte3;
-            if (codePoint >= 0x0800) {
-                checkScalarValue(codePoint);
-                return codePoint;
-            }
-            throw new Error('Invalid continuation byte');
-        }
-
-        // 4-byte sequence
-        if ((byte1 & 0xF8) === 0xF0) {
-            byte2 = readContinuationByte(state);
-            byte3 = readContinuationByte(state);
-            byte4 = readContinuationByte(state);
-            codePoint = ((byte1 & 0x0F) << 0x12) | (byte2 << 0x0C) |
-                (byte3 << 0x06) | byte4;
-            if (codePoint >= 0x010000 && codePoint <= 0x10FFFF) {
-                return codePoint;
+        //
+        //
+        // Shrink the buffer to fit it's contents
+        //
+        if (utf8.buffer.slice) {
+            rtrn = new Uint8Array(utf8.buffer.slice(0, idx));
+        } else {
+            rtrn = new Uint8Array(idx);
+            for (i = 0; i < idx; i++) {
+                rtrn[i] = utf8[i];
             }
         }
-        throw new Error('Invalid UTF-8 detected');
-    }
 
-    function utf8decode(byteArray) {
-        var state = {
-            byteArray: byteArray,
-            byteCount: byteArray.length,
-            byteIndex: 0
-        },
-        codePoints = [],
-            tmp;
-        while ((tmp = decodeSymbol(state)) !== false) {
-            codePoints.push(tmp);
+        return rtrn;
+    }
+    ;
+
+    /**
+     * Takes a Uint8Array containing a utf-8 string and writes it's contents to
+     * a new primitive utf-16 string.
+     *
+     * @param{Uint8Array} utf8
+     *     An array of bytes representing the string to be decoded
+     *
+     * @param{Object} options
+     * @config{boolean=true} strict     
+     *     If `true` codepoints reserved for use in utf-16 surrogate pairs
+     *     but encoded directly as utf-8 will cause 'utf8.decode' to raise an
+     *     exception as will characters encoded using more bytes than is
+     *     neccessary.  If 'false' these issues will be ignored.
+     *
+     * @return{String}
+     *     The input string as a native utf16 string
+     *
+     * @see utf8.encode
+     * @nosideeffects
+     */
+    function decode(utf8, options) {
+        var i, len,
+            c0, c1, c2, c3,
+            code_point,
+            str;
+
+        if (options === undefined) {
+            options = {};
         }
-        var result = ucs2encode(codePoints);
-        return result;
-    }
 
-    /*--------------------------------------------------------------------------*/
+        if (!(options instanceof Object)) {
+            throw new TypeError("expected Object for options map");
+        }
+
+        // default to strict
+        if (options.strict === undefined) {
+            options.strict = true;
+        }
+
+        if (!(utf8 instanceof Uint8Array)) {
+            throw new TypeError("expected Uint8Array");
+        }
+
+        str = "";
+        len = utf8.length;
+        i = 0;
+        while (i < len) {
+
+            //
+            //
+            // Read next code point from input array
+            //
+
+            c0 = utf8[i++];
+            if (!(c0 & 0x80)) {
+                //
+                // 0xxx xxxx
+                //
+
+                code_point = c0;
+
+
+            } else if (!((c0 & 0xe0) ^ 0xc0)) {
+                //
+                // 110x xxxx   10xx xxxx
+                //
+
+                if (len - i < 1) {
+                    throw new Error("unexpected end of string");
+                }
+                // if no data in first byte then one less byte should be used
+                if (options.strict && !(c0 & 0x1e)) {
+                    throw new Error("character in non canonical form");
+                }
+
+
+                c1 = utf8[i++];
+                // c1 should be of format 10xx xxxx
+                if (!((c1 & 0xe0) ^ 0xc0)) {
+                    throw new Error("invalid character");
+                }
+
+                code_point = (((c0 & 0x1f) << 6) |
+                    (c1 & 0x3f));
+
+
+            } else if (!((c0 & 0xf0) ^ 0xe0)) {
+                //
+                // 1110 xxxx  10xx xxxx  10xx xxxx
+                //
+
+                if (len - i < 2) {
+                    throw new Error("unexpected end of string");
+                }
+
+
+                c1 = utf8[i++];
+                // c1 should be of format 10xx xxxx
+                if (!((c1 & 0xe0) ^ 0xc0)) {
+                    throw new Error("invalid character");
+                }
+
+                c2 = utf8[i++];
+                // c2 should be of format 10xx xxxx
+                if (!((c2 & 0xe0) ^ 0xc0)) {
+                    throw new Error("invalid character");
+                }
+
+
+                // if no data in first byte or first bit of second byte then
+                // first byte is redundant
+                if (options.strict && !(c0 & 0x0f) && !(c1 & 0x20)) {
+                    throw new Error("character in non canonical form");
+                }
+
+                code_point = (((c0 & 0x0F) << 12) |
+                    ((c1 & 0x3F) << 6) |
+                    ((c2 & 0x3F) << 0));
+
+
+            } else if (!((c0 & 0xf8) ^ 0xf0)) {
+                //
+                // 1111 0xxx  10xx xxxx  10xx xxxx  10xx xxxx
+                //
+
+                if (len - i < 3) {
+                    throw new Error("unexpected end of string");
+                }
+
+
+                c1 = utf8[i++];
+                // c1 should be of format 10xx xxxx
+                if (!((c1 & 0xe0) ^ 0xc0)) {
+                    throw new Error("invalid character");
+                }
+
+                c2 = utf8[i++];
+                // c2 should be of format 10xx xxxx
+                if (!((c2 & 0xe0) ^ 0xc0)) {
+                    throw new Error("invalid character");
+                }
+
+                c3 = utf8[i++];
+                // c2 should be of format 10xx xxxx
+                if (!((c3 & 0xe0) ^ 0xc0)) {
+                    throw new Error("invalid character");
+                }
+
+
+                // if no data in first byte or first two bits of second byte then
+                // first byte is redundant
+                if (options.strict && !(c0 & 0x0e) && !(c1 & 0x30)) {
+                    throw new Error("character in non canonical form");
+                }
+
+                code_point = (((c0 & 0x0F) << 18) |
+                    ((c1 & 0x3F) << 12) |
+                    ((c2 & 0x3F) << 6) |
+                    ((c3 & 0x3F) << 0));
+
+
+            } else {
+                throw new Error("invalid character");
+            }
+
+            //
+            //
+            // Append code point to output string, possibly as a surrogate pair
+            //
+
+            if (options.strict && (0xd800 <= code_point && code_point <= 0xdfff)) {
+                throw new Error("utf8 encodes code point reserved for utf16");
+            }
+
+            if (code_point <= 0xffff) {
+                // code points less than 16 bits chan be encoded in utf-16 as a
+                // single character
+
+                str += String.fromCharCode(code_point);
+
+
+            } else if (0x10000 <= code_point && code_point <= 0x10ffff) {
+                // code points greater than that (up to a maximum of 0x10ffff)
+                // are encoded as a surrogate pair
+
+                code_point -= 0x10000;
+
+                // store first ten bytes in high surrogate
+                str += String.fromCharCode((code_point >>> 10) + 0xd800);
+
+                // store second ten bytes in low surrogate
+                str += String.fromCharCode((code_point & 0x3ff) + 0xdc00);
+
+
+            } else {
+                throw new Error("illegal code point: ", code_point);
+            }
+
+
+        }
+
+        return str;
+    }
+    ;
 
     return Object.freeze({
-        encode: utf8encode,
-        decode: utf8decode
+        encode: encode,
+        decode: decode
     });
 });

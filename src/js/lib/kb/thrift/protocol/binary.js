@@ -508,7 +508,7 @@ define([
          next value found in the protocol buffer */
         readString: function () {
             var size = this.readI32().value,
-                bytes = this.readMultiple(size),
+                bytes = new Uint8Array(this.readMultiple(size)),
                 string = utf8.decode(bytes);
             return {
                 value: string

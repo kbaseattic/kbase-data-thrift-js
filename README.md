@@ -28,41 +28,9 @@ From source:
 
 ## Testing
 
-There is a test framework in place, using Karma and Jasmine. There are tests for writing and reading basic types to an "echo" transport.
+Use Grunt to run Karma tests:
 
-Run tests: `karma start test/karma.conf.js`
-
-## Adding a new package (dependency )
-
-Every time you add a new dependency, you need to modify three files. For example, let's say you're installing the `bluebird` JS package for its Promise support. Then:
-
-1.a. Add the package to the "devDependencies" property in `bower.json`:
-
-        "bluebird": "^3.1.0",
-
-1.b. Now you can install the package:
-
-     $ bower install
-
-2. Add bluebird to the "paths" property in `main-test.js`:
-
-        bluebird: 'bower_components/bluebird/js/browser/bluebird',
-
-3. Add bluebird to the "files" property in `karma.conf.js`:
-      
-        {pattern: 'bower_components/bluebird/js/browser/bluebird.js', included: false},
-
-## Features
-
-- protocols:
-    - binary
-    - json
-- transports
-    - xhr
-    - websocket
-    - echo
-- testing
-- documentation
+    grunt test    
 
 ## History
 
@@ -77,14 +45,13 @@ As we began to integrate the Thrift javascript client for our service apis, it w
 
 At the moment (delete this when no longer true!) just the binary protocol, xhr transport, and echo transport are used and supported. The json protocol and websocket transports should be brought up to speed. It is unknown if the websocket implementation really works.
 
-## Future 
+## License
+<blockquote>
+Copyright (c) 2016 The KBase Project and its Contributors
 
-Since this is the bedrock of Javascript thrift clients, it needs to be tested, stable, and performant. Our testing needs to reflect and encourage these characterstics. To that end, we still have work to do! In order to test and excercise the transports, we need a service and api implementation to run against. This would probably best be implemented in this project as a nodejs, to reduce the extra dependencies of, say, a python service.
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-## Running tests
-
-Use Grunt to run Karma tests:
-
-    grunt test    
-
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+</blockquote>

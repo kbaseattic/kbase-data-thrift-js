@@ -42,8 +42,8 @@ define([
     './utf8'
 ], function (Thrift, utf8) {
     'use strict';
-    
-     /*
+
+    /*
      * A base Exception object for 
      * 
      * @returns {thrift-transport-xhr_L25.TTransportError}
@@ -54,7 +54,7 @@ define([
     TProtocolException.prototype = Object.create(Thrift.TException.prototype);
     TProtocolException.prototype.constructor = TProtocolException;
     Thrift.TTransportError = TProtocolException;
-    
+
     function TBinaryProtocolException(error) {
         this.name = 'TBinaryProtocolException';
         this.reason = error.reason;
@@ -67,8 +67,7 @@ define([
     TBinaryProtocolException.prototype = Object.create(TProtocolException.prototype);
     TBinaryProtocolException.prototype.constructor = TBinaryProtocolException;
     Thrift.TBinaryProtocolException = TBinaryProtocolException;
-    
-    
+
     Thrift.TBinaryProtocol = function (transport, strictRead, strictWrite) {
         this.transport = transport;
         this.strictRead = (strictRead !== undefined ? strictRead : false);
@@ -82,6 +81,195 @@ define([
     Thrift.TBinaryProtocol.VERSION_MASK = 0xffff0000;
     Thrift.TBinaryProtocol.VERSION_1 = 0x80010000;
     Thrift.TBinaryProtocol.TYPE_MASK = 0x000000ff;
+
+    function paddedHex(num, width) {
+        var padded = "000000000000000000" + num.toString(16);
+        return padded.substring(padded.length - width);
+    }
+
+    /*
+     * Packs an integer into an array of bytes adequate to contain a 64-bit
+     * integer. Practically, Javascript numbers are limited to 53 bits for an
+     * integer. This function enforces that limit. See the "precise" functions
+     * for arbitrary precision.
+     */
+
+    var int64max = 0x1fffffffffffff, // Math.pow(2, 53) - 1,
+        int64min = -int64max,
+        int32max = 0x7fffffff, // Math.pow(2,31) - 1,
+        int32min = -int32max,
+        int16max = 0x7fff, // Math.pow(2,15) - 1,
+        int16min = -int16max;
+
+    /*
+     * We have to use this direct manipulation of i64 because the javascript 
+     * bitwise operators do not work with numbers > 32 bits. 
+     * Our basic technique is to to convert the number into a hexidecimal, 
+     * capture each byte from this, convert back into an integer for each byte.
+     * For negatives, we need to use twos-complement technique -- but simplifying
+     * a bit -- add one, then subtract the absolute value from 0 (invert bits)
+     */
+    function p64(i64) {
+        var hexString,
+            i, result = [], byte, carry = false;
+
+        if (i64 < 0) {
+            // Here we add 1 to the negative number before the inversion, since
+            // it is all just arithmetic, and commutative.
+            var hexString = paddedHex(Math.abs(i64 + 1), 16);
+            for (i = 8; i > 0; i -= 1) {
+                var byte = parseInt(hexString.substring(i * 2 - 2, i * 2), 16);
+                result.push(byte ^ 0xff);
+            }
+            return result.reverse();
+        }
+        hexString = paddedHex(Math.abs(i64), 16);
+        for (i = 8; i > 0; i -= 1) {
+            var byte = parseInt(hexString.substring(i * 2 - 2, i * 2), 16);
+            result.push(byte);
+        }
+        return result.reverse();
+    }
+
+    function u64(packed) {
+        var hexString = "", finalByte, isNegative = false, mult = 1;
+        // If the left most bit is 1, then it is a negative.
+        if (packed[0] & parseInt('01111111', 2)) {
+            packed.forEach(function (value) {
+                hexString += paddedHex(value ^ 0xff, 2);
+            });
+            return -parseInt(hexString, 16) - 1;
+        }
+        packed.forEach(function (value) {
+            hexString += paddedHex(value, 2);
+        });
+        return parseInt(hexString, 16);
+    }
+
+    function pack64(i64) {
+        if (i64 < int64min) {
+            throw new TBinaryProtocolException({
+                message: 'Number is less than the minimum I64 value',
+                suggestions: 'Note in Javascript the max bits for an integer is 53'
+            }); 
+        }
+        if (i64 > int64max) {
+            throw new TBinaryProtocolException({
+                message: 'Number is greater than the maximum I64 value',
+                suggestions: 'Note in Javascript the max bits for an integer is 53'
+            });
+        }
+        // Also note that this technique assumes the integer follows the rules above,
+        // specifically because the top most bit must be 0, so that when it is
+        // flipped for a negative it is 1.
+        return p64(i64);
+    }
+
+    function unpack64(packed) {
+        if (packed.length !== 8) {
+            throw new TBinaryProtocolException({
+                message: 'I64 packed value is not 8 bytes'
+            });
+        }
+        return u64(packed);
+    }
+
+    // The 32-bit integer techniques are much faster than the 64/53 bit, because
+    // we can use the native javascript bitwise operators. These are restricted
+    // to 32 bits!
+    function p32(value) {
+        var p1 = value & 0xff,
+            p2 = (value >> 8) & 0xff,
+            p3 = (value >> 16) & 0xff,
+            p4 = (value >> 24) & 0xff;
+
+        return [p4, p3, p2, p1];
+    }
+
+    function u32(packed) {
+        var value = 0;
+
+        value |= packed[0] << 24;
+        value |= packed[1] << 16;
+        value |= packed[2] << 8;
+        value |= packed[3];
+
+        return value;
+    }
+
+
+    function pack32(value) {
+        if (value < int32min) {
+            throw new TBinaryProtocolException({
+                message: 'Number is less than the minimum I32 value'
+            });
+        }
+        if (value > int32max) {
+            throw new TBinaryProtocolException({
+                message: 'Number is greater than the maximum I32 value'
+            });
+        }
+        return p32(value);
+    }
+
+
+    function unpack32(packed) {
+        if (packed.length !== 4) {
+            throw new TBinaryProtocolException({
+                message: 'I32 packed value is not 4 bytes'
+            });
+        }
+        return u32(packed);
+    }
+
+    // 16 bit packer and unpacker
+
+    // On packing, the bitwise operators do the right thing with respect to
+    // the high left-most bit and negativeness
+     function p16(value) {
+        var p1 = value & 0xff,
+            p2 = (value >> 8) & 0xff;
+
+        return [p2, p1];
+    }
+    function pack16(value) {
+        if (value < int16min) {
+            throw new TBinaryProtocolException({
+                message: 'Number is less than the minimum I16 value'
+            });
+        }
+        if (value > int16max) {
+            throw new TBinaryProtocolException({
+                message: 'Number is greater than the maximum I16 value'
+            });
+        }
+        return p16(value);
+    }
+
+    // On unpacking though, the magic is lost and we need to do the 2s complement
+    // all by ourselves.
+    function u16(packed) {
+        var value = 0;
+
+        if (packed[0] & 0x80) {
+            value |= (packed[0] ^ 0xff) << 8;
+            value |= (packed[1] ^ 0xff);
+            return -value - 1;
+        }
+
+        value |= packed[0] << 8;
+        value |= packed[1];
+
+        return value;
+    }
+    function unpack16(packed) {
+        if (packed.length !== 2) {
+            throw new TBinaryProtocolException({
+                message: 'I16 packed value is not 2 bytes'
+            });
+        }
+        return u16(packed);
+    }
 
     Thrift.TBinaryProtocol.prototype = {
         getTransport: function () {
@@ -209,33 +397,24 @@ define([
         /** Serializes a number (short) */
         /*jslint bitwise: true */
         writeI16: function (i16) {
-            if (i16 < Math.pow(2, 15) * -1 || i16 >= Math.pow(2, 16)) {
-                throw new Error(i16 + " is incorrect for i16.");
-            }
-            this.transport.writeByte(255 & i16 >> 8);
-            this.transport.writeByte(255 & i16);
+            var bytes = pack16(i16);
+            bytes.forEach(function (byte) {
+                this.transport.writeByte(byte);
+            }.bind(this));
         },
         /** Serializes a number (int) */
         writeI32: function (i32) {
-            if (i32 <= Math.pow(2, 31) * -1 || i32 >= Math.pow(2, 31)) {
-                throw new Error(i32 + " is incorrect for i32.");
-            }
-            this.transport.writeByte(255 & i32 >> 24);
-            this.transport.writeByte(255 & i32 >> 16);
-            this.transport.writeByte(255 & i32 >> 8);
-            this.transport.writeByte(255 & i32);
+            var bytes = pack32(i32);
+            bytes.forEach(function (byte) {
+                this.transport.writeByte(byte);
+            }.bind(this));
         },
-        /** Serializes a number (long, for values over MAX_INTEGER, it will overflow) */
+        /** Serializes a number (long, for values over MAX_INTEGER, it will throw an error) */
         writeI64: function (i64) {
-            if (i64 <= Math.pow(2, 63) * -1 || i64 >= Math.pow(2, 64)) {
-                throw new Error(i64 + " is incorrect for i64.");
-            }
-            // Although this is a correct way of packing a long int,
-            // the value will overflow if the number is higher than max int
-            var hi = (i64 & 0xffffffff00000000 >> 32);
-            var lo = i64 & 0x00000000ffffffff;
-            this.writeI32(hi);
-            this.writeI32(lo);
+            var bytes = pack64(i64);
+            bytes.forEach(function (byte) {
+                this.transport.writeByte(byte);
+            }.bind(this));
         },
         /** Serializes a number (double IEEE-754) */
         writeDouble: function (dub) {
@@ -452,21 +631,46 @@ define([
         /** Returns the an object with a value property set to the 
          next value found in the protocol buffer */
         readI16: function () {
-            return {value: ((this.readByte().value & 255) << 8 | this.readByte().value & 255)};
+            var i, packed = [];
+            for (i = 0; i < 2; i += 1) {
+                packed.push(this.transport.readByte());
+            }
+            return {
+                value: unpack16(packed)
+            };
         },
         /** Returns the an object with a value property set to the 
          next value found in the protocol buffer */
         readI32: function () {
-            return {value: ((this.readByte().value & 255) << 24 | (this.readByte().value & 255) << 16 | (this.readByte().value & 255) << 8 | this.readByte().value & 255)};
+            var i, packed = [];
+            for (i = 0; i < 4; i += 1) {
+                packed.push(this.transport.readByte());
+            }
+            return {
+                value: unpack32(packed)
+            };
+
+            //    value: ((this.readByte().value & 255) << 24
+            //        | (this.readByte().value & 255) << 16
+            //        | (this.readByte().value & 255) << 8
+            //        | this.readByte().value & 255)};
         },
         /** Returns the an object with a value property set to the 
          next value found in the protocol buffer */
         readI64: function () {
             // Although this is a correct way of packing a long int,
             // the value will overflow if the number is higher than max int
-            var i32_1 = this.readI32().value;
-            var i32_2 = this.readI32().value;
-            return {value: (i32_1 << 32 | i32_2)};
+            var i, packed = [];
+            for (i = 0; i < 8; i += 1) {
+                packed.push(this.transport.readByte());
+            }
+            return {
+                value: unpack64(packed)
+            };
+
+            //var i32_1 = this.readI32().value;
+            //var i32_2 = this.readI32().value;
+            //return {value: (i32_1 << 32 | i32_2)};
         },
         /** Returns the an object with a value property set to the 
          next value found in the protocol buffer */

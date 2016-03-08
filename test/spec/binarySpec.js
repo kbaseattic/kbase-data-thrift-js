@@ -81,11 +81,11 @@ define([
             expect(list).toEqual(arg);
         });
 
-        it('Sets and gets a map of strings to ints', function() {
+        it('Sets and gets a map of strings to 64 bit ints', function () {
             var transport = new Thrift.EchoTransport(),
                 protocol = new Thrift.TBinaryProtocol(transport),
                 input_i64 = {
-                    peet: 123, 
+                    peet: 123,
                     coco: 456
                 };
             protocol.writeMapBegin(Thrift.Type.STRING, Thrift.Type.I64, 2);
@@ -102,15 +102,14 @@ define([
                 if (key) {
                     var value = protocol.readI64();
                     expect(value.value).toBe(input_i64[key.value]);
-                }
-                else {
+                } else {
                     fail("Could not read key " + i);
                 }
             }
             protocol.readMapEnd();
 
         });
-        
+
         // This is another way to test a Thrift map. Create a JS simple object,
         // feed it into thrift, read it back and create the equivalent JS
         // object, and compare the two.
@@ -118,30 +117,30 @@ define([
             var transport = new Thrift.EchoTransport(),
                 protocol = new Thrift.TBinaryProtocol(transport),
                 arg = {
-                    hi: 'there', 
+                    hi: 'there',
                     greetings: 'earthling'
                 },
-                keys = Object.keys(arg);
+            keys = Object.keys(arg);
             protocol.writeMapBegin(Thrift.Type.STRING, Thrift.Type.STRING, keys.length);
             keys.forEach(function (key) {
                 protocol.writeString(key);
                 protocol.writeString(arg[key]);
             });
             protocol.writeMapEnd();
-            
-            var mapHeader = protocol.readMapBegin(), result = {};            
+
+            var mapHeader = protocol.readMapBegin(), result = {};
             for (var i = 0; i < mapHeader.size; i += 1) {
                 var key = protocol.readString().value,
                     value = protocol.readString().value;
                 result[key] = value;
             }
             protocol.readMapEnd();
-            
+
             // todo evaluate header as well.
-            
-            expect(result).toEqual(arg);                
+
+            expect(result).toEqual(arg);
         });
-        
+
         it('Sets and gets a Set of strings', function () {
             var transport = new Thrift.EchoTransport(),
                 protocol = new Thrift.TBinaryProtocol(transport),
@@ -175,14 +174,81 @@ define([
             expect(result.value).toBe(arg);
         });
 
+
+        // I16 tests
         it('Set and get I16', function () {
             var transport = new Thrift.EchoTransport(),
-                protocol = new Thrift.TBinaryProtocol(transport), arg = 10000;
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = 10000;
             protocol.writeI16(arg);
             var result = protocol.readI16();
             expect(result.value).toBe(arg);
         });
-        it('Set and get I32', function () {
+        it('Set and get I16 at positive limit', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = Math.pow(2, 15) - 1;
+            protocol.writeI16(arg);
+            var result = protocol.readI16();
+            expect(result.value).toBe(arg);
+        });
+        it('Set and get I16 at negative limit', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = -(Math.pow(2, 15) - 1);
+            protocol.writeI16(arg);
+            var result = protocol.readI16();
+            expect(result.value).toBe(arg);
+        });
+        it('Set and get I16 with 16 bits full', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = Math.pow(2, 16) - 1;
+            expect(function () {
+                protocol.writeI16(arg);
+                return protocol.readI16();
+            }).toThrow(new Thrift.TBinaryProtocolException({
+                message: 'Number is greater than the maximum I16 value'
+            }));
+        });
+        it('Set and get I16 with 17 bits full', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = Math.pow(2, 17) - 1;
+            expect(function () {
+                protocol.writeI16(arg);
+                return protocol.readI16();
+            }).toThrow(new Thrift.TBinaryProtocolException({
+                message: 'Number is greater than the maximum I16 value'
+            }));
+        });
+        it('Set and get I16 with negative 16 bits full', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = -(Math.pow(2, 16) - 1);
+            expect(function () {
+                protocol.writeI16(arg);
+                return protocol.readI16();
+            }).toThrow(new Thrift.TBinaryProtocolException({
+                message: 'Number is less than the minimum I16 value'
+            }));
+        });
+        it('Set and get I16 with negative 17 bits full', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = -(Math.pow(2, 17) - 1);
+            expect(function () {
+                protocol.writeI16(arg);
+                return protocol.readI16();
+            }).toThrow(new Thrift.TBinaryProtocolException({
+                message: 'Number is less than the minimum I16 value'
+            }));
+        });
+
+
+
+        // I32 tests        
+        it('Set and get I32 within range', function () {
             var transport = new Thrift.EchoTransport(),
                 protocol = new Thrift.TBinaryProtocol(transport),
                 arg = 10000;
@@ -190,6 +256,66 @@ define([
             var result = protocol.readI32();
             expect(result.value).toBe(arg);
         });
+        it('Set and get negative I32 within range', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = -10000;
+            protocol.writeI32(arg);
+            var result = protocol.readI32();
+            expect(result.value).toBe(arg);
+        });
+        it('Set and get I32 at the positive limit', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = 0x7fffffff;
+            protocol.writeI32(arg);
+            var result = protocol.readI32();
+            expect(result.value).toBe(arg);
+        });
+        it('Set and get I32 at the negative limit', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = -0x7fffffff;
+            protocol.writeI32(arg);
+            var result = protocol.readI32();
+            expect(result.value).toBe(arg);
+        });
+        it('Set and get I32 with 32 bits full, should fail', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = 0xffffffff;
+            expect(function () {
+                protocol.writeI32(arg);
+                return protocol.readI32();
+            }).toThrow(new Thrift.TBinaryProtocolException({
+                message: 'Number is greater than the maximum I32 value'
+            }));
+        });
+        it('Set and get I32 with full 33 bits full, should fail', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = 0x100000000;
+
+            expect(function () {
+                protocol.writeI32(arg);
+                return protocol.readI32();
+            }).toThrow(new Thrift.TBinaryProtocolException({
+                message: 'Number is greater than the maximum I32 value'
+            }));
+        });
+        it('Set and get I32 with -32 bits full, should fail', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = -0xffffffff;
+            expect(function () {
+                protocol.writeI32(arg);
+                return protocol.readI32();
+            }).toThrow(new Thrift.TBinaryProtocolException({
+                message: 'Number is less than the minimum I32 value'
+            }));
+        });
+
+        // I64 tests
         it('Set and get I64', function () {
             var transport = new Thrift.EchoTransport(),
                 protocol = new Thrift.TBinaryProtocol(transport),
@@ -198,5 +324,70 @@ define([
             var result = protocol.readI64();
             expect(result.value).toBe(arg);
         });
+        it('Set and get I64, 31 full bits (testing 32 bit boundary)', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = Math.pow(2, 31) - 1;
+            protocol.writeI64(arg);
+            var result = protocol.readI64();
+            expect(result.value).toBe(arg);
+        });
+        it('Set and get I64, 32 full bits (testing 32 bit boundary)', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = Math.pow(2, 32) - 1;
+            protocol.writeI64(arg);
+            var result = protocol.readI64();
+            expect(result.value).toBe(arg);
+        });
+        it('Set and get I64, 33 full bits (testing 32 bit boundary)', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = Math.pow(2, 33) - 1;
+            protocol.writeI64(arg);
+            var result = protocol.readI64();
+            expect(result.value).toBe(arg);
+        });
+        it('Set and get I64, 53 full bits', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = Math.pow(2, 53) - 1;
+            protocol.writeI64(arg);
+            var result = protocol.readI64();
+            expect(result.value).toBe(arg);
+        });
+        it('Set and get I64 with 54 bits full', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = Math.pow(2, 54) - 1;
+            expect(function () {
+                protocol.writeI64(arg);
+                return protocol.readI64();
+            }).toThrow(new Thrift.TBinaryProtocolException({
+                message: 'Number is greater than the maximum I64 value'
+            }));
+        });
+
+        it('Set and get I64 with -53 bits full', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = -(Math.pow(2, 53) - 1);
+            protocol.writeI64(arg);
+            var result = protocol.readI64();
+            expect(result.value).toBe(arg);
+        });
+        it('Set and get I64 with -54 bits full', function () {
+            var transport = new Thrift.EchoTransport(),
+                protocol = new Thrift.TBinaryProtocol(transport),
+                arg = -(Math.pow(2, 54) - 1);
+            expect(function () {
+                protocol.writeI64(arg);
+                return protocol.readI64();
+            }).toThrow(new Thrift.TBinaryProtocolException({
+                message: 'Number is less than the minimum I64 value'
+            }));
+        });
+
+
     });
 });
